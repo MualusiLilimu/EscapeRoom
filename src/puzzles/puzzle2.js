@@ -1,0 +1,1 @@
+// Logic of the puzzle1 will be coded here, and of course you can add more files if we want to more puzzles
