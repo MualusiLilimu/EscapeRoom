@@ -5,7 +5,8 @@
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-//Factory function to create Room1
+// everything you want to design for this ROOM you should do it inside createRoom function
+// you are also free to create functions outside the createRoom function and call them inside afterwards
 
 export function createRoom4() {
     const room = new THREE.Group();

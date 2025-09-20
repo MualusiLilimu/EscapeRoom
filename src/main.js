@@ -5,7 +5,8 @@
 // Main game entry point
 // Sets up scene, camera, renderer, player, game, and levels
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+import * as THREE from 'three';
 import { createControls } from './camera.js';
 
 
@@ -27,8 +28,6 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 2, 7);
 
-
-
 // camera movement
 const controls = new createControls(camera, document.body);
 // Click to lock pointer
@@ -43,11 +42,18 @@ document.body.appendChild(renderer.domElement);
 
 
 // --- Add lights ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(10, 10, 10);
 scene.add(directionalLight);
+
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
 
 // --- Initialize player ---
