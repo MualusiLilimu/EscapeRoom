@@ -13,14 +13,6 @@ export function createRoom1() {
     const room = new THREE.Group();
     //TODO design a roome here
 
-    const floor = loadTexture('/../../public/textures/tile.jpg');
-    const geometry = new THREE.BoxGeometry(40,1,40);
-    const material = new THREE.MeshPhongMaterial({color: "red"});
-
-    const cube = new THREE.Mesh(geometry, material);
-
-
-    room.add(cube);
 
   return room;
 }
