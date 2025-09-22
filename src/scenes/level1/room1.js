@@ -2,6 +2,7 @@
 // This file also Defines the geometry, textures, and objects for this room.
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {loadTexture} from '../../../utils/loader.js';
 
 
 
@@ -11,6 +12,15 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 export function createRoom1() {
     const room = new THREE.Group();
     //TODO design a roome here
+
+    const floor = loadTexture('/../../public/textures/tile.jpg');
+    const geometry = new THREE.BoxGeometry(40,1,40);
+    const material = new THREE.MeshPhongMaterial({color: "red"});
+
+    const cube = new THREE.Mesh(geometry, material);
+
+
+    room.add(cube);
 
   return room;
 }

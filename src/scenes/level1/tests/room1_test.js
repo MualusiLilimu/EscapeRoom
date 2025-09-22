@@ -8,6 +8,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createRoom1 } from '../room1.js';
 
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xaaaaaa);
 
@@ -17,7 +18,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 5, 15);
+camera.position.set(0, 15, 25);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -27,6 +28,7 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 2.5, 0); // focus around room center
 controls.update();
+
 
 // Lights
 scene.add(new THREE.AmbientLight(0xffffff, 0.5));
