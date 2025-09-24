@@ -9,7 +9,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createRoom2 } from '../room2.js';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xaaaaaa);
+scene.background = new THREE.Color("0x000000");
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -17,22 +17,35 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 5, 15);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// OrbitControls for free movement around the room
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 2.5, 0); // focus around room center
+;
+
+camera.position.set(0, 200, 0); // 200 units high, center of floor
+controls.target.set(0, 200, 100); // point in front of camera
 controls.update();
 
+
+
+
+
+
 // Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(10, 10, 10);
-scene.add(dirLight);
+// Improved lighting so walls, door, and handle are visible from all angles
+scene.add(new THREE.AmbientLight(0xffffff, 0.8)); // brighter ambient light
+
+const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
+dirLight1.position.set(10, 20, 10);
+scene.add(dirLight1);
+
+const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+dirLight2.position.set(-10, 20, -10);
+scene.add(dirLight2);
+
 
 // Add the room
 scene.add(createRoom2());
