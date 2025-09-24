@@ -5,7 +5,7 @@ export function createRoom2() {
     const room = new THREE.Group();
 
     // Room dimensions
-    const roomWidth = 1200;
+    const roomWidth = 1000;
     const roomDepth = 1000;
     const roomHeight = 600;
     const wallThickness = 10;
@@ -51,6 +51,11 @@ const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
 ceiling.position.set(0, roomHeight + ceilingThickness / 2, 0); // top of walls
 room.add(ceiling);
 
+// Add the floor
+const floor = createFloor(1000, 1000, 50);
+room.add(floor);
+
+
 
     // -------------------------
     // Add the door
@@ -86,7 +91,39 @@ function createDoor(width, height, depth, color, posX, posY, posZ) {
     doorGroup.add(handleMesh);
 
     // Position entire door group in the room
+
     doorGroup.position.set(posX, 0, posZ);
 
     return doorGroup;
 }
+
+// -------------------------
+// Floor Function
+// -------------------------
+function createFloor(roomWidth, roomDepth, tileSize = 50) {
+    const floorGroup = new THREE.Group();
+
+    const tilesX = Math.floor(roomWidth / tileSize);
+    const tilesZ = Math.floor(roomDepth / tileSize);
+
+    for (let i = 0; i < tilesX; i++) {
+        for (let j = 0; j < tilesZ; j++) {
+            const color = (i + j) % 2 === 0 ? 0xf5f5dc : 0x8b7d6b; // cream white and dark brown
+            const tileMaterial = new THREE.MeshStandardMaterial({ color });
+            const tileGeometry = new THREE.PlaneGeometry(tileSize, tileSize);
+            const tileMesh = new THREE.Mesh(tileGeometry, tileMaterial);
+
+            tileMesh.rotation.x = -Math.PI / 2; // flat on the floor
+            tileMesh.position.set(
+                -roomWidth / 2 + tileSize / 2 + i * tileSize,
+                0,
+                -roomDepth / 2 + tileSize / 2 + j * tileSize
+            );
+
+            floorGroup.add(tileMesh);
+        }
+    }
+
+    return floorGroup;
+}
+
