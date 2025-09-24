@@ -58,9 +58,19 @@ window.addEventListener('resize', () => {
 });
 
 // Animation loop
+const clock = new THREE.Clock();
+
 function animate() {
-  requestAnimationFrame(animate);
-  controls.update(); // needed for damping
-  renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime() * 1000; // milliseconds
+
+    // Animate curtains
+    scene.traverse(obj => {
+        if (obj.userData.animate) obj.userData.animate(elapsed);
+    });
+
+    controls.update();
+    renderer.render(scene, camera);
 }
 animate();
+
