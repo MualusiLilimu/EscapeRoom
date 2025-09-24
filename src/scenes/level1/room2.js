@@ -16,32 +16,36 @@ export function createRoom2() {
     const wallGeometryDepth = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth); // left/right
 
     // -------------------------
-    // Wall materials with slight reflection (diffuse visible)
-    const frontWallMaterial = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 });
-    const backWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 });
-    const leftWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.6, metalness: 0 });
-    const rightWallMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.6, metalness: 0 });
+    // Wall materials
+    const frontWallMaterial = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 }); // brown
+    const backWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 }); // brown
+
+    // Brick texture for side walls
+    const textureLoader = new THREE.TextureLoader();
+    const brickTexture = textureLoader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
+    brickTexture.wrapS = brickTexture.wrapT = THREE.RepeatWrapping;
+    brickTexture.repeat.set(4, 4);
+
+    const leftWallMaterial  = new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.7, metalness: 0 });
+    const rightWallMaterial = new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.7, metalness: 0 });
 
     // -------------------------
-    // Front wall
+    // Walls
     const frontWall = new THREE.Mesh(wallGeometryWidth, frontWallMaterial);
     frontWall.position.set(0, roomHeight / 2, roomDepth / 2 + wallThickness / 2);
     frontWall.receiveShadow = true;
     room.add(frontWall);
 
-    // Back wall
     const backWall = new THREE.Mesh(wallGeometryWidth, backWallMaterial);
     backWall.position.set(0, roomHeight / 2, -roomDepth / 2 - wallThickness / 2);
     backWall.receiveShadow = true;
     room.add(backWall);
 
-    // Left wall
     const leftWall = new THREE.Mesh(wallGeometryDepth, leftWallMaterial);
     leftWall.position.set(-roomWidth / 2 - wallThickness / 2, roomHeight / 2, 0);
     leftWall.receiveShadow = true;
     room.add(leftWall);
 
-    // Right wall
     const rightWall = new THREE.Mesh(wallGeometryDepth, rightWallMaterial);
     rightWall.position.set(roomWidth / 2 + wallThickness / 2, roomHeight / 2, 0);
     rightWall.receiveShadow = true;
@@ -63,49 +67,44 @@ export function createRoom2() {
     room.add(floor);
 
     // -------------------------
-    // Door
-    const door = createDoor(170, 400, 10, 0xffffff, 0, 200, roomDepth / 2 + wallThickness / 2);
+    // Door (realistic with frame and handle)
+    const door = createDoorWithFrame(170, 400, 10, 0, 200, roomDepth / 2 + wallThickness / 2);
     room.add(door);
 
     // -------------------------
-    // Ceiling Point Lights
-    const lightDistance = 3200;
-    const lightIntensity = 10.5;
-    const lightDecay = 2;
-
-    const cornerOffsets = [
-        [-roomWidth / 2 + 50, roomHeight - 20, -roomDepth / 2 + 50],
-        [-roomWidth / 2 + 50, roomHeight - 20, roomDepth / 2 - 50],
-        [roomWidth / 2 - 50, roomHeight - 20, -roomDepth / 2 + 50],
-        [roomWidth / 2 - 50, roomHeight - 20, roomDepth / 2 - 50]
+    // Hanging Lights (modern realistic)
+    const lightPositions = [
+        [-roomWidth/2 + 150, roomHeight - 50, -roomDepth/2 + 150],
+        [ roomWidth/2 - 150, roomHeight - 50, -roomDepth/2 + 150],
+        [-roomWidth/2 + 150, roomHeight - 50,  roomDepth/2 - 150],
+        [ roomWidth/2 - 150, roomHeight - 50,  roomDepth/2 - 150],
+        [0, roomHeight - 50, 0] // center
     ];
 
-    cornerOffsets.forEach(pos => {
-        const light = new THREE.PointLight(0xffffff, lightIntensity, lightDistance, lightDecay);
-        light.position.set(...pos);
-        light.castShadow = true;
-        room.add(light);
+    lightPositions.forEach(pos => {
+        const rodLength = 50; // wire/rod length
+        const rodGeometry = new THREE.CylinderGeometry(2, 2, rodLength, 8);
+        const rodMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.7, roughness: 0.4 });
+        const rod = new THREE.Mesh(rodGeometry, rodMaterial);
+        rod.position.set(pos[0], pos[1] - rodLength/2, pos[2]);
+        rod.castShadow = true;
+        room.add(rod);
 
-        const bulbGeometry = new THREE.SphereGeometry(10, 16, 16);
-        const bulbMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffaa, emissiveIntensity: 1 });
+        const bulbGeometry = new THREE.SphereGeometry(20, 32, 32);
+        const bulbMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffaa, emissiveIntensity: 2, metalness: 0.1, roughness: 0.2 });
         const bulb = new THREE.Mesh(bulbGeometry, bulbMaterial);
-        bulb.position.set(...pos);
+        bulb.position.set(pos[0], pos[1] - rodLength, pos[2]);
+        bulb.castShadow = true;
         room.add(bulb);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1.5, 3000, 2);
+        pointLight.position.set(pos[0], pos[1] - rodLength, pos[2]);
+        pointLight.castShadow = true;
+        room.add(pointLight);
     });
 
-    const centerLight = new THREE.PointLight(0xffffff, lightIntensity, lightDistance, lightDecay);
-    centerLight.position.set(0, roomHeight - 20, 0);
-    centerLight.castShadow = true;
-    room.add(centerLight);
-
-    const centerBulbGeometry = new THREE.SphereGeometry(12, 16, 16);
-    const centerBulbMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffaa, emissiveIntensity: 1 });
-    const centerBulb = new THREE.Mesh(centerBulbGeometry, centerBulbMaterial);
-    centerBulb.position.set(0, roomHeight - 20, 0);
-    room.add(centerBulb);
-
     // -------------------------
-    // Add curtain window on LEFT wall
+    // Curtain window on LEFT wall
     const curtainWindow = createCurtainWindow(300, 300, -roomWidth/2 - wallThickness/2 + 1, 300, 0);
     room.add(curtainWindow);
 
@@ -113,31 +112,50 @@ export function createRoom2() {
 }
 
 // -------------------------
-// Door Function
-// -------------------------
-function createDoor(width, height, depth, color, posX, posY, posZ) {
+// REALISTIC Door with Frame and Handle
+function createDoorWithFrame(width, height, depth, posX, posY, posZ) {
     const doorGroup = new THREE.Group();
 
-    const doorGeometry = new THREE.BoxGeometry(width, height, depth);
-    const doorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500, metalness: 0, roughness: 1 });
-    const doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
-    doorMesh.position.set(0, height / 2, 0);
-    doorGroup.add(doorMesh);
+    // Door frame
+    const frameThickness = 10;
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0 });
+    const frameGeometry = new THREE.BoxGeometry(width + frameThickness*2, height + frameThickness*2, depth + frameThickness);
+    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+    frame.position.set(0, height/2, 0);
+    frame.castShadow = true;
+    frame.receiveShadow = true;
+    doorGroup.add(frame);
 
-    const handleGeometry = new THREE.CylinderGeometry(12, 12, 50, 16);
-    const handleMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.5, roughness: 0.5 });
-    const handleMesh = new THREE.Mesh(handleGeometry, handleMaterial);
-    handleMesh.rotation.z = Math.PI / 2;
-    handleMesh.position.set(width / 2 - 10, height / 2, depth / 2 + 10);
-    doorGroup.add(handleMesh);
+    // Door panel
+    const textureLoader = new THREE.TextureLoader();
+    const doorTexture = textureLoader.load('https://threejs.org/examples/textures/wood.jpg');
+    doorTexture.wrapS = doorTexture.wrapT = THREE.RepeatWrapping;
+    doorTexture.repeat.set(1,1);
+    const doorMaterial = new THREE.MeshStandardMaterial({ map: doorTexture, roughness: 1, metalness: 0 });
+    const doorGeometry = new THREE.BoxGeometry(width, height, depth);
+    const door = new THREE.Mesh(doorGeometry, doorMaterial);
+    door.position.set(0, height/2, 0);
+    door.castShadow = true;
+    door.receiveShadow = true;
+    doorGroup.add(door);
+
+    // Handle
+    const handleGeometry = new THREE.CylinderGeometry(25, 4, 30, 32);
+    const handleMaterial = new THREE.MeshStandardMaterial({ color: "red", metalness: 0.8, roughness: 0.4 });
+    const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+    handle.rotation.z = Math.PI/2;
+    handle.position.set(width/2 - 15, height/2, depth/2 + 2);
+    handle.castShadow = true;
+    handle.receiveShadow = true;
+    doorGroup.add(handle);
 
     doorGroup.position.set(posX, 0, posZ);
+
     return doorGroup;
 }
 
 // -------------------------
 // Floor Function
-// -------------------------
 function createFloor(roomWidth, roomDepth, tileSize = 50) {
     const floorGroup = new THREE.Group();
 
@@ -166,16 +184,12 @@ function createFloor(roomWidth, roomDepth, tileSize = 50) {
 }
 
 // -------------------------
-// Realistic Window with Animated Curtains
-// -------------------------
+// Curtain Window Function (unchanged)
 function createCurtainWindow(width, height, posX, posY, posZ) {
     const group = new THREE.Group();
-
-    // Rotate window to face into room
     group.rotation.y = Math.PI / 2;
     group.position.set(posX, posY, posZ);
 
-    // Window frame
     const frameThickness = 15;
     const frameGeometry = new THREE.BoxGeometry(width, height, frameThickness);
     const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.4, metalness: 0.6 });
@@ -183,23 +197,19 @@ function createCurtainWindow(width, height, posX, posY, posZ) {
     frame.position.set(0, 0, 0);
     group.add(frame);
 
-    // Glass with city view
     const textureLoader = new THREE.TextureLoader();
-    const cityTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'); // replace with tall building/city texture
+    const cityTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
     const glassGeometry = new THREE.PlaneGeometry(width - 20, height - 20);
- const glassMaterial = new THREE.MeshStandardMaterial({
-    map: cityTexture,
-    transparent: true,
-    opacity: 1,           // fully opaque, optional
-    roughness: 1,         // max roughness → no reflection
-    metalness: 0,         // no metal → no shine
-    emissive: 0x000000,   // no glow
-});
+    const glassMaterial = new THREE.MeshBasicMaterial({
+        map: cityTexture,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide
+    });
     const glass = new THREE.Mesh(glassGeometry, glassMaterial);
     glass.position.set(0, 0, frameThickness / 2 + 0.1);
     group.add(glass);
 
-    // Curtain rail
     const railGeometry = new THREE.CylinderGeometry(5, 5, width + 20, 16);
     const railMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.8, roughness: 0.2 });
     const rail = new THREE.Mesh(railGeometry, railMaterial);
@@ -207,7 +217,6 @@ function createCurtainWindow(width, height, posX, posY, posZ) {
     rail.position.set(0, height / 2 + 10, frameThickness / 2 + 1);
     group.add(rail);
 
-    // Curtains
     const curtainWidth = (width - 40) / 2;
     const curtainHeight = height;
     const curtainGeometry = new THREE.PlaneGeometry(curtainWidth, curtainHeight, 20, 20);
@@ -221,11 +230,9 @@ function createCurtainWindow(width, height, posX, posY, posZ) {
     rightCurtain.position.set(curtainWidth / 2 + 10, 0, frameThickness / 2 + 2);
     group.add(rightCurtain);
 
-    // Animate curtains: small horizontal swing like cloth
     group.userData.animate = (time) => {
-        const amplitude = 2.5; // small displacement
-        const speed = 0.0015; // slow swing
-
+        const amplitude = 2.5;
+        const speed = 0.0015;
         const leftPos = leftCurtain.geometry.attributes.position.array;
         const rightPos = rightCurtain.geometry.attributes.position.array;
 
@@ -240,4 +247,3 @@ function createCurtainWindow(width, height, posX, posY, posZ) {
 
     return group;
 }
-

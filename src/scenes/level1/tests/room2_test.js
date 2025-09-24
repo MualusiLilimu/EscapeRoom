@@ -36,7 +36,7 @@ controls.update();
 
 // Lights
 // Improved lighting so walls, door, and handle are visible from all angles
-scene.add(new THREE.AmbientLight(0xffffff, 0.3)); // brighter ambient light
+scene.add(new THREE.AmbientLight(0xffffff, 1)); // brighter ambient light
 
 const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
 dirLight1.position.set(10, 20, 10);
