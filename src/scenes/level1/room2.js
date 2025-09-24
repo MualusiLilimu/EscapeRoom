@@ -108,6 +108,17 @@ export function createRoom2() {
     const curtainWindow = createCurtainWindow(300, 300, -roomWidth/2 - wallThickness/2 + 1, 300, 0);
     room.add(curtainWindow);
 
+const desk = createOfficeDesk();
+desk.position.set(-350, 0, 400);
+room.add(desk);
+
+const chair = createOfficeChair();
+chair.position.set(-350, 0, 300);
+room.add(chair);
+
+
+
+
     return room;
 }
 
@@ -246,4 +257,101 @@ function createCurtainWindow(width, height, posX, posY, posZ) {
     };
 
     return group;
+}
+
+// -------------------------
+// Realistic Desk Function
+// -------------------------
+// Office Desk with Drawers
+function createOfficeDesk() {
+    const deskGroup = new THREE.Group();
+
+    // Desk top
+    const topGeometry = new THREE.BoxGeometry(250, 10, 200); // big desk
+    const topMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.6, metalness: 0.1 });
+    const topMesh = new THREE.Mesh(topGeometry, topMaterial);
+    topMesh.position.y = 80; // desk height
+    topMesh.castShadow = true;
+    topMesh.receiveShadow = true;
+    deskGroup.add(topMesh);
+
+    // Desk legs
+    const legGeometry = new THREE.BoxGeometry(8, 75, 8);
+    const legMaterial = new THREE.MeshStandardMaterial({ color: 0x4B2E2E, roughness: 0.6, metalness: 0 });
+    const positions = [
+        [-96, 37.5, -46], [-96, 37.5, 46],
+        [96, 37.5, -46], [96, 37.5, 46]
+    ];
+    positions.forEach(pos => {
+        const leg = new THREE.Mesh(legGeometry, legMaterial);
+        leg.position.set(pos[0], pos[1], pos[2]);
+        leg.castShadow = true;
+        leg.receiveShadow = true;
+        deskGroup.add(leg);
+    });
+
+    // Drawers (3 drawers on the right side)
+    for (let i = 0; i < 3; i++) {
+        const drawerGeometry = new THREE.BoxGeometry(50, 20, 40);
+        const drawerMaterial = new THREE.MeshStandardMaterial({ color: 0xA0522D, roughness: 0.6, metalness: 0.1 });
+        const drawer = new THREE.Mesh(drawerGeometry, drawerMaterial);
+        drawer.position.set(80, 55 - i*22, 0); // stacked vertically
+        drawer.castShadow = true;
+        drawer.receiveShadow = true;
+
+        // Drawer handle
+        const handleGeometry = new THREE.CylinderGeometry(1.5, 1.5, 20, 16);
+        const handleMaterial = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, metalness: 0.8, roughness: 0.4 });
+        const handle = new THREE.Mesh(handleGeometry, handleMaterial);
+        handle.rotation.z = Math.PI/2;
+        handle.position.set(0, 0, 22);
+        drawer.add(handle);
+
+        deskGroup.add(drawer);
+    }
+
+    return deskGroup;
+}
+
+// -------------------------
+// Office Chair (static, realistic)
+function createOfficeChair() {
+    const chairGroup = new THREE.Group();
+
+    // Seat
+    const seatGeometry = new THREE.BoxGeometry(100, 15, 50);
+    const seatMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.7, metalness: 0.3 });
+    const seat = new THREE.Mesh(seatGeometry, seatMaterial);
+    seat.position.y = 40;
+    seat.castShadow = true;
+    seat.receiveShadow = true;
+    chairGroup.add(seat);
+
+    // Backrest
+    const backGeometry = new THREE.BoxGeometry(100, 60, 8);
+    const back = new THREE.Mesh(backGeometry, seatMaterial);
+    back.position.set(0, 70, -21);
+    back.castShadow = true;
+    back.receiveShadow = true;
+    chairGroup.add(back);
+
+    // Base
+    const baseGeometry = new THREE.CylinderGeometry(15, 15, 5, 16);
+    const base = new THREE.Mesh(baseGeometry, new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.6, metalness: 0.5 }));
+    base.position.y = 5;
+    chairGroup.add(base);
+
+    // Chair legs (5-pronged)
+    const legLength = 25;
+    for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * Math.PI * 2;
+        const x = Math.cos(angle) * legLength;
+        const z = Math.sin(angle) * legLength;
+        const legGeometry = new THREE.CylinderGeometry(2, 2, 5, 8);
+        const leg = new THREE.Mesh(legGeometry, new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.6, metalness: 0.5 }));
+        leg.position.set(x, 2.5, z);
+        chairGroup.add(leg);
+    }
+
+    return chairGroup;
 }
