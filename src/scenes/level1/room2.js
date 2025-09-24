@@ -43,6 +43,15 @@ export function createRoom2() {
     rightWall.position.set(roomWidth / 2 + wallThickness / 2, roomHeight / 2, 0);
     room.add(rightWall);
 
+    // Add the ceiling
+const ceilingThickness = 10;
+const ceilingGeometry = new THREE.BoxGeometry(roomWidth, ceilingThickness, roomDepth);
+const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 }); // black
+const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+ceiling.position.set(0, roomHeight + ceilingThickness / 2, 0); // top of walls
+room.add(ceiling);
+
+
     // -------------------------
     // Add the door
     const door = createDoor(170, 400, 10, 0xffffff, 0, 200, roomDepth / 2 + wallThickness / 2);
