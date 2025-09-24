@@ -16,51 +16,96 @@ export function createRoom2() {
     const wallGeometryDepth = new THREE.BoxGeometry(wallThickness, roomHeight, roomDepth); // left/right
 
     // -------------------------
-    // Wall materials with different colors for each wall
-    const frontWallMaterial = new THREE.MeshStandardMaterial({ color: 0x4b2e2e });   // dark brown
-    const backWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x4b2e2e });   // lighter brown
-    const leftWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x228B22 });   // green
-    const rightWallMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });   // dark olive green
+    // Wall materials with slight reflection (diffuse visible)
+    const frontWallMaterial = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 });
+    const backWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x4b2e2e, roughness: 0.6, metalness: 0 });
+    const leftWallMaterial  = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.6, metalness: 0 });
+    const rightWallMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.6, metalness: 0 });
 
     // -------------------------
     // Front wall
     const frontWall = new THREE.Mesh(wallGeometryWidth, frontWallMaterial);
     frontWall.position.set(0, roomHeight / 2, roomDepth / 2 + wallThickness / 2);
+    frontWall.receiveShadow = true;
     room.add(frontWall);
 
     // Back wall
     const backWall = new THREE.Mesh(wallGeometryWidth, backWallMaterial);
     backWall.position.set(0, roomHeight / 2, -roomDepth / 2 - wallThickness / 2);
+    backWall.receiveShadow = true;
     room.add(backWall);
 
     // Left wall
     const leftWall = new THREE.Mesh(wallGeometryDepth, leftWallMaterial);
     leftWall.position.set(-roomWidth / 2 - wallThickness / 2, roomHeight / 2, 0);
+    leftWall.receiveShadow = true;
     room.add(leftWall);
 
     // Right wall
     const rightWall = new THREE.Mesh(wallGeometryDepth, rightWallMaterial);
     rightWall.position.set(roomWidth / 2 + wallThickness / 2, roomHeight / 2, 0);
+    rightWall.receiveShadow = true;
     room.add(rightWall);
 
-    // Add the ceiling
-const ceilingThickness = 10;
-const ceilingGeometry = new THREE.BoxGeometry(roomWidth, ceilingThickness, roomDepth);
-const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 }); // black
-const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-ceiling.position.set(0, roomHeight + ceilingThickness / 2, 0); // top of walls
-room.add(ceiling);
-
-// Add the floor
-const floor = createFloor(1000, 1000, 50);
-room.add(floor);
-
-
+    // -------------------------
+    // Ceiling
+    const ceilingThickness = 10;
+    const ceilingGeometry = new THREE.BoxGeometry(roomWidth, ceilingThickness, roomDepth);
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.5, metalness: 0 });
+    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+    ceiling.position.set(0, roomHeight + ceilingThickness / 2, 0);
+    ceiling.receiveShadow = true;
+    room.add(ceiling);
 
     // -------------------------
-    // Add the door
+    // Floor (tiles)
+    const floor = createFloor(roomWidth, roomDepth, 50);
+    room.add(floor);
+
+    // -------------------------
+    // Door
     const door = createDoor(170, 400, 10, 0xffffff, 0, 200, roomDepth / 2 + wallThickness / 2);
     room.add(door);
+
+    // -------------------------
+    // Ceiling Point Lights
+    const lightDistance = 3200;
+    const lightIntensity = 10.5;
+    const lightDecay = 2;
+
+    // Four corners
+    const cornerOffsets = [
+        [-roomWidth / 2 + 50, roomHeight - 20, -roomDepth / 2 + 50],
+        [-roomWidth / 2 + 50, roomHeight - 20, roomDepth / 2 - 50],
+        [roomWidth / 2 - 50, roomHeight - 20, -roomDepth / 2 + 50],
+        [roomWidth / 2 - 50, roomHeight - 20, roomDepth / 2 - 50]
+    ];
+
+    cornerOffsets.forEach(pos => {
+        const light = new THREE.PointLight(0xffffff, lightIntensity, lightDistance, lightDecay);
+        light.position.set(...pos);
+        light.castShadow = true;
+        room.add(light);
+
+        // Optional: small black sphere to represent the light fixture
+        const bulbGeometry = new THREE.SphereGeometry(10, 16, 16);
+        const bulbMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffaa, emissiveIntensity: 1 });
+        const bulb = new THREE.Mesh(bulbGeometry, bulbMaterial);
+        bulb.position.set(...pos);
+        room.add(bulb);
+    });
+
+    // Center light
+    const centerLight = new THREE.PointLight(0xffffff, lightIntensity, lightDistance, lightDecay);
+    centerLight.position.set(0, roomHeight - 20, 0);
+    centerLight.castShadow = true;
+    room.add(centerLight);
+
+    const centerBulbGeometry = new THREE.SphereGeometry(12, 16, 16);
+    const centerBulbMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xffffaa, emissiveIntensity: 1 });
+    const centerBulb = new THREE.Mesh(centerBulbGeometry, centerBulbMaterial);
+    centerBulb.position.set(0, roomHeight - 20, 0);
+    room.add(centerBulb);
 
     return room;
 }
@@ -71,13 +116,8 @@ room.add(floor);
 function createDoor(width, height, depth, color, posX, posY, posZ) {
     const doorGroup = new THREE.Group();
 
-    // Door mesh
     const doorGeometry = new THREE.BoxGeometry(width, height, depth);
-    const doorMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffa500, // orange
-        metalness: 0,
-        roughness: 1
-    });
+    const doorMaterial = new THREE.MeshStandardMaterial({ color: 0xffa500, metalness: 0, roughness: 1 });
     const doorMesh = new THREE.Mesh(doorGeometry, doorMaterial);
     doorMesh.position.set(0, height / 2, 0);
     doorGroup.add(doorMesh);
@@ -86,14 +126,11 @@ function createDoor(width, height, depth, color, posX, posY, posZ) {
     const handleGeometry = new THREE.CylinderGeometry(12, 12, 50, 16);
     const handleMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.5, roughness: 0.5 });
     const handleMesh = new THREE.Mesh(handleGeometry, handleMaterial);
-    handleMesh.rotation.z = Math.PI / 2; // horizontal
+    handleMesh.rotation.z = Math.PI / 2;
     handleMesh.position.set(width / 2 - 10, height / 2, depth / 2 + 10);
     doorGroup.add(handleMesh);
 
-    // Position entire door group in the room
-
     doorGroup.position.set(posX, 0, posZ);
-
     return doorGroup;
 }
 
@@ -113,17 +150,16 @@ function createFloor(roomWidth, roomDepth, tileSize = 50) {
             const tileGeometry = new THREE.PlaneGeometry(tileSize, tileSize);
             const tileMesh = new THREE.Mesh(tileGeometry, tileMaterial);
 
-            tileMesh.rotation.x = -Math.PI / 2; // flat on the floor
+            tileMesh.rotation.x = -Math.PI / 2;
             tileMesh.position.set(
                 -roomWidth / 2 + tileSize / 2 + i * tileSize,
                 0,
                 -roomDepth / 2 + tileSize / 2 + j * tileSize
             );
-
+            tileMesh.receiveShadow = true;
             floorGroup.add(tileMesh);
         }
     }
 
     return floorGroup;
 }
-
