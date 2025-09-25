@@ -107,6 +107,7 @@ export function createRoom1() {
     const ceiling1 = createFloor(30,1,30,0,16,0,"white",ceilingTexture); 
     room.add(ceiling1);
 
+
     const ceiling2 = createFloor(60,1,15,15,16,22.5,"white",ceilingTexture);
     room.add(ceiling2);
  
