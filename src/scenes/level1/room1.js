@@ -4,7 +4,6 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 
 
@@ -85,14 +84,15 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
 export function createRoom1() {
     const room = new THREE.Group();
     //TODO design a roome here
-    const plane =  createPlane(20000,1000,'../../../../public/textures/pave.jpg');
+    const plane =  createPlane(20000,1000,'/textures/pave.jpg');
     room.add(plane);
 
-    const floortexture = loadTexture('../../../../public/textures/tile.jpg');
+    const floortexture = loadTexture('/textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
     floortexture.wrapT = THREE.RepeatWrapping;
     floortexture.repeat.set(1.5, 1);
-    const walltexture = loadTexture('../../../../public/textures/wall.jpg');
+    const walltexture = loadTexture('/textures/wall.jpg');
+    const ceilingTexture = loadTexture('/textures/ceiling.jpg');
     walltexture.wrapS = THREE.RepeatWrapping;
     walltexture.wrapT = THREE.RepeatWrapping;
 
@@ -102,6 +102,13 @@ export function createRoom1() {
 
     const floor2 = createFloor(60,1,15,15,0,22.5,"white",floortexture);
     room.add(floor2);
+
+    //ceiling
+    const ceiling1 = createFloor(30,1,30,0,16,0,"white",ceilingTexture); 
+    room.add(ceiling1);
+
+    const ceiling2 = createFloor(60,1,15,15,16,22.5,"white",ceilingTexture);
+    room.add(ceiling2);
  
     // walls
     const wall1 = createWall(30,15,1,0,8,-14.5,"white",walltexture);
@@ -142,7 +149,7 @@ export function createRoom1() {
 
     //door
     // add a door in wall1
-    const doorTexture = '../../../../public/textures/door.jpeg'; // replace with your door texture
+    const doorTexture = '/textures/door.jpeg'; // replace with your door texture
     const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture); 
     room.add(door);
 
@@ -150,41 +157,94 @@ export function createRoom1() {
     //////////// Furnitures //////////////////////
 
     //cage
-    loadModel('../../../../public/models/cage.glb',
+    loadModel('/models/cage.glb',
       {x:-8,y:0,z:-9,scale:0.05},
       (cage)=>{
         room.add(cage);
       }
     );
     //locker
-    loadModel('../../../../public/models/locker.glb',
+    loadModel('/models/locker.glb',
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //dardboard
-    loadModel('../../../../public/models/dartboard.glb',
+    loadModel('/models/dartboard.glb',
       {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //old couch
-    loadModel('../../../../public/models/old_couch.glb',
+    loadModel('/models/old_couch.glb',
       {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //old table
-    loadModel('../../../../public/models/old_wooden_table.glb',
+    loadModel('/models/old_wooden_table.glb',
       {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
       (cage)=>{
         room.add(cage);
       }
     );
+    //window
+    loadModel('/models/window.glb',
+      {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //chest
+    loadModel('/models/chest.glb',
+      {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    
+    //wall lamp
+    loadModel('/models/wall_lamp.glb',
+      {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
+      (cage)=>{
+        cage.castShadow = true;
+        room.add(cage);
 
+        const wallLight = new THREE.SpotLight(0xffd27f, 2, 40, Math.PI / 2, 0.5, 1);
+        wallLight.position.set(25, 8, 28);
+        wallLight.target.position.set(25, 5, 20);
+        wallLight.castShadow = true;
+
+        wallLight.shadow.mapSize.width = 1024;
+        wallLight.shadow.mapSize.height = 1024;
+        wallLight.shadow.bias = -0.003;
+
+        room.add(wallLight);
+        room.add(wallLight.target);
+      }
+    );
+
+//ceiling light
+loadModel('/models/ceiling_light.glb',
+  {x:-6,y:-17.5,z:-30,scale:12,rotation:{y:-Math.PI/2}},
+  (ceilingLight)=>{
+    room.add(ceilingLight);
+
+    // Create the actual light source
+    const bulbLight = new THREE.PointLight(0xfff2cc, 20, 50); 
+    bulbLight.position.set(0, 10, 10);
+    bulbLight.castShadow = true;
+
+    bulbLight.shadow.mapSize.width = 1024;
+    bulbLight.shadow.mapSize.height = 1024;
+    bulbLight.shadow.bias = -0.003;
+
+    room.add(bulbLight);
+
+  }
+);
   return room;
 }
-

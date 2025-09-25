@@ -13,7 +13,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(10, 20, 30);
+camera.position.set(0, 5, 10);
+camera.lookAt(0,5,0);
 
 // --- Renderer ---
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -29,8 +30,9 @@ controls.update();
 
 // --- Lights ---
 // Ambient light for soft illumination
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
+
 
 // Directional light that casts shadows
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
