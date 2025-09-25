@@ -3,6 +3,8 @@
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
+import { loadModel } from '../../../utils/loader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 
 
@@ -103,30 +105,39 @@ export function createRoom1() {
  
     // walls
     const wall1 = createWall(30,15,1,0,8,-14.5,"white",walltexture);
+    wall1.receiveShadow = true;
     room.add(wall1);
 
     const wall2 = createWall(1,15,30,14.5,8,0,"white",walltexture);
+    wall2.receiveShadow = true;
     room.add(wall2);
 
     const wall3 = createWall(1,15,30,-14.5,8,0,"white",walltexture);
+    wall3.receiveShadow = true;
     room.add(wall3);
 
     const wall4 = createWall(1,15,15,-14.5,8,22.5,"white",walltexture);
+    wall4.receiveShadow = true;
     room.add(wall4);
 
     const wall5 = createWall(60,15,1,15,8,29.5,"white",walltexture);
+    wall5.receiveShadow = true;
     room.add(wall5);
 
     const wall6 =  createWall(31,15,1,29.5,8,15.5,"white",walltexture);
+    wall6.receiveShadow = true;
     room.add(wall6);
 
     const wall7 = createWall(1,15,4,44.5,8,18,"white",walltexture);
+    wall7.receiveShadow = true;
     room.add(wall7);
 
     const wall8 = createWall(1,15,4,44.5,8,27,"white",walltexture);
+    wall8.receiveShadow = true;
     room.add(wall8);
 
     const wall9 = createWall(1,5,5,44.5,13,22.5,"white",walltexture);
+    wall9.receiveShadow = true;
     room.add(wall9);
 
     //door
@@ -135,6 +146,44 @@ export function createRoom1() {
     const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture); 
     room.add(door);
 
+
+    //////////// Furnitures //////////////////////
+
+    //cage
+    loadModel('../../../../public/models/cage.glb',
+      {x:-8,y:0,z:-9,scale:0.05},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //locker
+    loadModel('../../../../public/models/locker.glb',
+      {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //dardboard
+    loadModel('../../../../public/models/dartboard.glb',
+      {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //old couch
+    loadModel('../../../../public/models/old_couch.glb',
+      {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //old table
+    loadModel('../../../../public/models/old_wooden_table.glb',
+      {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
 
   return room;
 }

@@ -1,52 +1,75 @@
-// for effective testing, when you design the a room you will be able to see changes in the correspondi html file of this file
-// so run the room_test.html file when designing to see the changes Just like how things were in CGV Labs
-
-
-// You make changes to your liking 
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createRoom1 } from '../room1.js';
 
-
+// --- Scene Setup ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xaaaaaa);
 
+// --- Camera ---
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 15, 25);
+camera.position.set(10, 20, 30);
 
+// --- Renderer ---
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;                 // enable shadows
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
 
-// OrbitControls for free movement around the room
+// --- Controls ---
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 2.5, 0); // focus around room center
+controls.target.set(15, 5, 15); // focus around room center
 controls.update();
 
+// --- Lights ---
+// Ambient light for soft illumination
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambientLight);
 
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+// Directional light that casts shadows
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(10, 10, 10);
+dirLight.position.set(40, 60, 40);
+dirLight.castShadow = true;
+
+// Shadow camera settings
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 1;
+dirLight.shadow.camera.far = 200;
+dirLight.shadow.camera.left = -50;
+dirLight.shadow.camera.right = 50;
+dirLight.shadow.camera.top = 50;
+dirLight.shadow.camera.bottom = -50;
+
 scene.add(dirLight);
 
-// Add the room
-scene.add(createRoom1());
+// --- Room Setup ---
+const room = createRoom1();
 
-// Handle window resize
+// Enable shadows on room objects
+room.traverse((child) => {
+  if (child.isMesh) {
+    child.castShadow = true;
+    child.receiveShadow = true;
+  }
+});
+
+scene.add(room);
+
+// --- Window Resize Handling ---
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Animation loop
+// --- Animation Loop ---
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
