@@ -29,7 +29,7 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 ;
 
-camera.position.set(0, 300, 0);  // diagonal view
+camera.position.set(0, 300, -70);  // diagonal view
 controls.target.set(0, 200, 100);       // look a bit down at the room center
 controls.update();
 

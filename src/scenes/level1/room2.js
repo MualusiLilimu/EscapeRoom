@@ -149,7 +149,7 @@ loadSofa(
 
 // Load drawer at back wall, left corner
 loadDrawer(
-    { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 0 }, // adjust as needed
+    { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 150 }, // adjust as needed
     200,  // scale
     room
 );
@@ -157,8 +157,15 @@ loadDrawer(
 
 // Place table in front of sofa
 loadTable(
-    { x: 150, y: 0, z: 60 }, // tweak 'z' to control distance from sofa
+    { x: 150, y: 0, z: 100 }, // tweak 'z' to control distance from sofa
     120, // scale to match room and sofa
+    room
+);
+
+// Place treasure chest slightly behind sofa
+loadTreasureChest(
+    { x: 150, y: 0, z: -80 }, // tweak z for "behind"
+    50,  // smaller scale so it fits
     room
 );
 
@@ -551,6 +558,35 @@ function loadTable(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
         undefined,
         function (error) {
             console.error('Error loading table:', error);
+        }
+    );
+}
+
+
+// Load treasure chest
+function loadTreasureChest(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
+    const loader = new GLTFLoader();
+
+    loader.load(
+        'models/treasure_chest_4k.gltf/treasure_chest_4k.gltf',
+        function (gltf) {
+            console.log("Treasure chest loaded successfully!");
+            const chest = gltf.scene;
+            chest.scale.set(scale, scale, scale);
+            chest.position.set(position.x, position.y, position.z);
+
+            chest.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            sceneGroup.add(chest);
+        },
+        undefined,
+        function (error) {
+            console.error('Error loading treasure chest:', error);
         }
     );
 }
