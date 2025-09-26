@@ -23,6 +23,8 @@ export function createRoom2() {
     // Brick texture for side walls
     const textureLoader = new THREE.TextureLoader();
     const brickTexture = textureLoader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
+    brickTexture.encoding = THREE.sRGBEncoding;
+
     brickTexture.wrapS = brickTexture.wrapT = THREE.RepeatWrapping;
     brickTexture.repeat.set(4, 4);
 
@@ -117,6 +119,25 @@ chair.position.set(-350, 0, 300);
 room.add(chair);
 
 
+// Create monitor
+const monitor = createMonitor();
+monitor.position.set(-350, 80, 410); // on top of desk
+room.add(monitor);
+
+// Create keyboard
+const keyboard = createKeyboard();
+keyboard.position.set(-350, 81.5, 390); // slightly in front of monitor
+room.add(keyboard);
+
+// Opposite the door wall at Z = -roomDepth/2
+const silverLockerWall = createSilverLockerGrid(1000, 600, 10, -500);
+room.add(silverLockerWall);
+
+
+
+
+
+
 
 
     return room;
@@ -140,6 +161,8 @@ function createDoorWithFrame(width, height, depth, posX, posY, posZ) {
     // Door panel
     const textureLoader = new THREE.TextureLoader();
     const doorTexture = textureLoader.load('https://threejs.org/examples/textures/wood.jpg');
+    doorTexture.encoding = THREE.sRGBEncoding;
+
     doorTexture.wrapS = doorTexture.wrapT = THREE.RepeatWrapping;
     doorTexture.repeat.set(1,1);
     const doorMaterial = new THREE.MeshStandardMaterial({ map: doorTexture, roughness: 1, metalness: 0 });
@@ -354,4 +377,119 @@ function createOfficeChair() {
     }
 
     return chairGroup;
+}
+
+
+function createMonitor() {
+    const monitorGroup = new THREE.Group();
+
+    // Screen
+    const screenGeometry = new THREE.BoxGeometry(60, 40, 3); // width, height, depth
+    
+    const screenMaterial = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        emissive: 0x00ffff, // bright cyan glow
+        emissiveIntensity: 2.2,
+        roughness: 0.4,
+        metalness: 0.2
+    });
+    const screen = new THREE.Mesh(screenGeometry, screenMaterial);
+    screen.position.set(0, 30, 0);
+    screen.castShadow = true;
+    screen.receiveShadow = true;
+    monitorGroup.add(screen);
+
+    // Stand
+    const standGeometry = new THREE.BoxGeometry(10, 15, 10);
+    const standMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.6, metalness: 0.5 });
+    const stand = new THREE.Mesh(standGeometry, standMaterial);
+    stand.position.set(0, 15/2, 0);
+    monitorGroup.add(stand);
+
+
+
+    // Better point light for monitor glow (casts shadows)
+const light = new THREE.PointLight(0x00ffff, 1.8, 300, 2); // brighter, limited range
+light.position.set(0, 30, 6);
+light.castShadow = true;
+light.shadow.mapSize.width = 1024;
+light.shadow.mapSize.height = 1024;
+light.shadow.bias = -0.002;
+monitorGroup.add(light);
+
+    return monitorGroup;
+}
+
+
+function createKeyboard() {
+    const keyboardGeometry = new THREE.BoxGeometry(50, 3, 15);
+    const keyboardMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6, metalness: 0.2 });
+    const keyboard = new THREE.Mesh(keyboardGeometry, keyboardMaterial);
+
+    // Optional keys bumps (just visual effect)
+    const keyGeometry = new THREE.BoxGeometry(2, 1, 2);
+    const keyMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.7, metalness: 0.1 });
+    for (let i = -22; i <= 22; i += 4) {
+        for (let j = -6; j <= 6; j += 3) {
+            const key = new THREE.Mesh(keyGeometry, keyMaterial);
+            key.position.set(i, 2, j);
+            keyboard.add(key);
+        }
+    }
+
+    return keyboard;
+}
+
+function createSilverLockerGrid(roomWidth, wallHeight, wallDepth, startZ) {
+    const lockerGroup = new THREE.Group();
+
+    const rows = 3;           // number of vertical rows
+    const cols = 20;          // number of lockers horizontally
+    const gap = 2;            // gap between lockers
+
+    const lockerHeight = (wallHeight / 2 - (rows + 1) * gap) / rows;
+    const lockerWidth  = (roomWidth - (cols + 1) * gap) / cols;
+    const lockerDepth  = 40;  // fixed depth of lockers
+
+    const startX = -roomWidth / 2 + lockerWidth / 2 + gap;
+    const startY = lockerHeight / 2 + gap;
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            // Locker body
+            const lockerGeometry = new THREE.BoxGeometry(lockerWidth, lockerHeight, lockerDepth);
+            const lockerMaterial = new THREE.MeshStandardMaterial({
+                color: 0xc0c0c0,   // silver
+                roughness: 0.8,    // not shiny
+                metalness: 0.9
+            });
+            const locker = new THREE.Mesh(lockerGeometry, lockerMaterial);
+            locker.position.set(
+                startX + c * (lockerWidth + gap),
+                startY + r * (lockerHeight + gap),
+                startZ
+            );
+            locker.castShadow = true;
+            locker.receiveShadow = true;
+            lockerGroup.add(locker);
+
+            // Visible lock
+            const lockGeometry = new THREE.CylinderGeometry(2, 2, 5, 16);
+            const lockMaterial = new THREE.MeshStandardMaterial({
+                color: 0x333333,
+                roughness: 1.0,
+                metalness: 0.3
+            });
+            const lock = new THREE.Mesh(lockGeometry, lockMaterial);
+            lock.rotation.z = Math.PI/2;
+            lock.position.set(
+                locker.position.x,
+                locker.position.y,
+                startZ + lockerDepth/2 + 1
+            );
+            lockerGroup.add(lock);
+        }
+    }
+
+    return lockerGroup;
 }

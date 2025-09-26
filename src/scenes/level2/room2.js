@@ -12,5 +12,5 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 export function createRoom2() {
     const room = new THREE.Group();
      //TODO design a roome here
-
+     return room
 }

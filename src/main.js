@@ -26,7 +26,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 2, 7);
+camera.position.set(0, 5, 10);
+camera.lookAt(0,5,0);
 
 // camera movement
 const controls = new createControls(camera, document.body);
@@ -36,16 +37,30 @@ document.body.addEventListener('click', () => {
 });
 
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;                 // enable shadows
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
 
 
 // --- Add lights ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
+// Directional light that casts shadows
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(10, 10, 10);
+directionalLight.position.set(40, 60, 40);
+directionalLight.castShadow = true;
+
+// Shadow camera settings
+directionalLight.shadow.mapSize.width = 2048;
+directionalLight.shadow.mapSize.height = 2048;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 200;
+directionalLight.shadow.camera.left = -50;
+directionalLight.shadow.camera.right = 50;
+directionalLight.shadow.camera.top = 50;
+directionalLight.shadow.camera.bottom = -50;
 scene.add(directionalLight);
 
 
@@ -72,6 +87,16 @@ game.addLevel(level1);
 game.addLevel(level2);
 game.addLevel(level3);
 game.addLevel(level4);
+
+const room = game.getCurrentRoom();
+
+// Enable shadows on room objects
+room.traverse((child) => {
+  if (child.isMesh) {
+    child.castShadow = true;
+    child.receiveShadow = true;
+  }
+});
 
 // --- Add first room to scene ---
 scene.add(game.getCurrentRoom());
