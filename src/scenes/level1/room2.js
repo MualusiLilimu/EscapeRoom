@@ -1,5 +1,10 @@
 // room2.js
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+
+
+
 
 export function createRoom2() {
     const room = new THREE.Group();
@@ -32,7 +37,9 @@ export function createRoom2() {
     const rightWallMaterial = new THREE.MeshStandardMaterial({ map: brickTexture, roughness: 0.7, metalness: 0 });
 
     // -------------------------
-    // Walls
+
+
+  // Walls
     const frontWall = new THREE.Mesh(wallGeometryWidth, frontWallMaterial);
     frontWall.position.set(0, roomHeight / 2, roomDepth / 2 + wallThickness / 2);
     frontWall.receiveShadow = true;
@@ -129,9 +136,33 @@ const keyboard = createKeyboard();
 keyboard.position.set(-350, 81.5, 390); // slightly in front of monitor
 room.add(keyboard);
 
-// Opposite the door wall at Z = -roomDepth/2
-const silverLockerWall = createSilverLockerGrid(1000, 600, 10, -500);
-room.add(silverLockerWall);
+
+
+
+
+// Load realistic sofa facing opposite the window
+loadSofa(
+    { x: 150, y: 0, z: -10 }, // adjust position as needed
+    150,                       // scale
+    room                     // add to the room group
+);
+
+// Load drawer at back wall, left corner
+loadDrawer(
+    { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 0 }, // adjust as needed
+    200,  // scale
+    room
+);
+
+
+// Place table in front of sofa
+loadTable(
+    { x: 150, y: 0, z: 60 }, // tweak 'z' to control distance from sofa
+    120, // scale to match room and sofa
+    room
+);
+
+
 
 
 
@@ -440,56 +471,86 @@ function createKeyboard() {
     return keyboard;
 }
 
-function createSilverLockerGrid(roomWidth, wallHeight, wallDepth, startZ) {
-    const lockerGroup = new THREE.Group();
 
-    const rows = 3;           // number of vertical rows
-    const cols = 20;          // number of lockers horizontally
-    const gap = 2;            // gap between lockers
+function loadSofa(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
+    const loader = new GLTFLoader();
 
-    const lockerHeight = (wallHeight / 2 - (rows + 1) * gap) / rows;
-    const lockerWidth  = (roomWidth - (cols + 1) * gap) / cols;
-    const lockerDepth  = 40;  // fixed depth of lockers
+    loader.load(
+        'models/sofa/sofa_02_4k.gltf',
+        function (gltf) {
+            console.log("Sofa loaded successfully!"); // <- check console
 
-    const startX = -roomWidth / 2 + lockerWidth / 2 + gap;
-    const startY = lockerHeight / 2 + gap;
-
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            // Locker body
-            const lockerGeometry = new THREE.BoxGeometry(lockerWidth, lockerHeight, lockerDepth);
-            const lockerMaterial = new THREE.MeshStandardMaterial({
-                color: 0xc0c0c0,   // silver
-                roughness: 0.8,    // not shiny
-                metalness: 0.9
+            const sofa = gltf.scene;
+            sofa.scale.set(scale, scale, scale);
+            sofa.position.set(position.x, position.y, position.z);
+            sofa.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
             });
-            const locker = new THREE.Mesh(lockerGeometry, lockerMaterial);
-            locker.position.set(
-                startX + c * (lockerWidth + gap),
-                startY + r * (lockerHeight + gap),
-                startZ
-            );
-            locker.castShadow = true;
-            locker.receiveShadow = true;
-            lockerGroup.add(locker);
-
-            // Visible lock
-            const lockGeometry = new THREE.CylinderGeometry(2, 2, 5, 16);
-            const lockMaterial = new THREE.MeshStandardMaterial({
-                color: 0x333333,
-                roughness: 1.0,
-                metalness: 0.3
-            });
-            const lock = new THREE.Mesh(lockGeometry, lockMaterial);
-            lock.rotation.z = Math.PI/2;
-            lock.position.set(
-                locker.position.x,
-                locker.position.y,
-                startZ + lockerDepth/2 + 1
-            );
-            lockerGroup.add(lock);
+            sceneGroup.add(sofa);
+        },
+        undefined,
+        function (error) {
+            console.error('Error loading sofa:', error);
         }
-    }
+    );
+}
 
-    return lockerGroup;
+
+function loadDrawer(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
+    console.log("Calling loadDrawer at position:", position, "with scale:", scale); // <- NEW
+
+    const loader = new GLTFLoader();
+
+    loader.load(
+        'models/drwing/painted_wooden_cabinet_4k.gltf',
+        function(gltf) {
+            console.log("Drawer model loaded successfully!"); // <- NEW
+            const drawer = gltf.scene;
+            drawer.scale.set(scale, scale, scale);
+            drawer.position.set(position.x, position.y, position.z);
+
+            drawer.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            sceneGroup.add(drawer);
+            console.log("Drawer added to sceneGroup!"); // <- NEW
+        },
+        undefined,
+        function(error) {
+            console.error('Error loading drawer:', error);
+        }
+    );
+}
+
+// Load round wooden table in front of sofa
+function loadTable(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
+    const loader = new GLTFLoader();
+
+    loader.load(
+        'models/tafel/round_wooden_table_02_4k.gltf',
+        function (gltf) {
+            console.log("Table loaded successfully!");
+            const table = gltf.scene;
+            table.scale.set(scale, scale, scale);
+            table.position.set(position.x, position.y, position.z);
+            table.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+            sceneGroup.add(table);
+        },
+        undefined,
+        function (error) {
+            console.error('Error loading table:', error);
+        }
+    );
 }

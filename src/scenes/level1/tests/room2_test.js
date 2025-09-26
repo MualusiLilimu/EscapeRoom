@@ -42,7 +42,7 @@ controls.update();
 // Lights
 // Improved lighting so walls, door, and handle are visible from all angles
 // ===== Lighting (replace existing lights block) =====
-scene.add(new THREE.AmbientLight(0xffffff, -0.001)); // soft fill
+scene.add(new THREE.AmbientLight(0xffffff, 0.01)); // soft fill
 
 // Main directional (shadow-casting) — covers room, like a strong interior light
 const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
