@@ -114,8 +114,22 @@ export function createRoom2() {
 
     // -------------------------
     // Curtain window on LEFT wall
-    const curtainWindow = createCurtainWindow(300, 300, -roomWidth/2 - wallThickness/2 + 1, 300, 0);
-    room.add(curtainWindow);
+    // const curtainWindow = createCurtainWindow(300, 300, -roomWidth/2 - wallThickness/2 + 1, 300, 0);
+    // room.add(curtainWindow);
+
+    // Replace window with "picture" placeholder
+const picture = createPictureOnWall(
+    300, 300,
+    -roomWidth/2 + 5, 300, 0,
+    'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
+    Math.PI / 2  // <-- THIS IS THE ROTATION
+);
+
+
+
+
+
+
 
 const desk = createOfficeDesk();
 desk.position.set(-350, 0, 400);
@@ -590,3 +604,43 @@ function loadTreasureChest(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
         }
     );
 }
+
+
+function createPictureOnWall(width, height, posX, posY, posZ, imageURL, rotationY = 0) {
+    const group = new THREE.Group();
+    group.position.set(posX, posY, posZ);
+    group.rotation.y = rotationY; // rotate to face the room
+
+    const frameThickness = 15;
+
+    // FRAME
+    const frameGeometry = new THREE.BoxGeometry(width, height, frameThickness);
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.4, metalness: 0.6 });
+    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+    frame.position.set(0, 0, 0);
+    group.add(frame);
+
+    // PICTURE
+    const textureLoader = new THREE.TextureLoader();
+    const pictureTexture = textureLoader.load(
+        imageURL,
+        () => { pictureTexture.encoding = THREE.sRGBEncoding; } // ensure correct colors
+    );
+
+    const pictureGeometry = new THREE.PlaneGeometry(width - 20, height - 20);
+    const pictureMaterial = new THREE.MeshStandardMaterial({
+        map: pictureTexture,
+        side: THREE.FrontSide
+    });
+
+    const picture = new THREE.Mesh(pictureGeometry, pictureMaterial);
+
+    // Place picture slightly in front of the frame
+    picture.position.set(0, 0, frameThickness / 2 + 0.5);
+    group.add(picture);
+
+    return group;
+}
+
+
+
