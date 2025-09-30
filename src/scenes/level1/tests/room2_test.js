@@ -42,10 +42,10 @@ controls.update();
 // Lights
 // Improved lighting so walls, door, and handle are visible from all angles
 // ===== Lighting (replace existing lights block) =====
-scene.add(new THREE.AmbientLight(0xffffff, 0.01)); // soft fill
+scene.add(new THREE.AmbientLight(0xffffff, 0.00001)); // soft fill
 
 // Main directional (shadow-casting) — covers room, like a strong interior light
-const dirLight1 = new THREE.DirectionalLight(0xffffff, 1);
+const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.1);
 dirLight1.position.set(100, 300, 100);
 dirLight1.castShadow = true;
 dirLight1.shadow.mapSize.width = 2048;
@@ -61,13 +61,13 @@ dirLight1.shadow.bias = -0.0005;
 scene.add(dirLight1);
 
 // Secondary fill light (non-harsh)
-const dirLight2 = new THREE.DirectionalLight(0xffffff, 1);
+const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.1);
 dirLight2.position.set(-200, 200, -100);
 dirLight2.castShadow = false;
 scene.add(dirLight2);
 
 // Ceiling bulb — local light source that also casts shadows
-const ceilingBulb = new THREE.PointLight(0xffeecc, 0.9, 1000, 0.5);
+const ceilingBulb = new THREE.PointLight(0xffeecc, 0.9, 1000, 0);
 ceilingBulb.position.set(0, 180, 0);
 ceilingBulb.castShadow = true;
 ceilingBulb.shadow.mapSize.width = 1024;

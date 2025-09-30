@@ -183,6 +183,14 @@ loadTreasureChest(
     room
 );
 
+loadWindow(
+    { x: -417.5, y: 300, z: 0}, // perfectly on left wall, centered vertically and horizontally
+    100,                         // scale
+    room
+);
+
+
+
 
 
 
@@ -640,6 +648,37 @@ function createPictureOnWall(width, height, posX, posY, posZ, imageURL, rotation
     group.add(picture);
 
     return group;
+}
+
+
+function loadWindow(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
+    const loader = new GLTFLoader();
+
+    loader.load(
+        'models/window/scene.gltf',
+        function (gltf) {
+            console.log("Window loaded successfully!");
+            const windowModel = gltf.scene;
+            windowModel.scale.set(scale, scale, scale);
+            windowModel.position.set(position.x, position.y, position.z);
+
+            // rotate to face into the room if necessary
+            windowModel.rotation.y = Math.PI / 2; // adjust if needed
+
+            windowModel.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                }
+            });
+
+            sceneGroup.add(windowModel);
+        },
+        undefined,
+        function (error) {
+            console.error('Error loading window:', error);
+        }
+    );
 }
 
 
