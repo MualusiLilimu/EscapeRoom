@@ -5,6 +5,8 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/
 
 
 
+const scaryPaintingURL = 'models/A.webp'; 
+// placeholder: later you can replace with your own creepy image if you generate one
 
 export function createRoom2() {
     const room = new THREE.Group();
@@ -190,6 +192,8 @@ loadWindow(
 );
 
 
+// Add scary painting on the back wall
+addScaryPainting(room);
 
 
 
@@ -679,6 +683,37 @@ function loadWindow(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
             console.error('Error loading window:', error);
         }
     );
+}
+
+
+function addScaryPainting(sceneGroup) {
+    const width = 300; // painting width
+    const height = 300; // painting height
+    const frameThickness = 10;
+
+    // group for painting + frame
+    const paintingGroup = new THREE.Group();
+    paintingGroup.position.set(0, height/2 + 100, -500 + 5); // slightly in front of back wall
+    paintingGroup.rotation.y = 0; // facing the room
+
+    // FRAME
+    const frameGeometry = new THREE.BoxGeometry(width, height, frameThickness);
+    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.4, metalness: 0.6 });
+    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+    paintingGroup.add(frame);
+
+    // PAINTING
+    const loader = new THREE.TextureLoader();
+    const paintingTexture = loader.load(scaryPaintingURL, () => {
+        paintingTexture.encoding = THREE.sRGBEncoding;
+    });
+    const paintingMaterial = new THREE.MeshStandardMaterial({ map: paintingTexture, side: THREE.FrontSide });
+    const paintingGeometry = new THREE.PlaneGeometry(width - 20, height - 20);
+    const paintingMesh = new THREE.Mesh(paintingGeometry, paintingMaterial);
+    paintingMesh.position.set(0, 0, frameThickness / 2 + 0.5);
+    paintingGroup.add(paintingMesh);
+
+    sceneGroup.add(paintingGroup);
 }
 
 

@@ -61,13 +61,13 @@ dirLight1.shadow.bias = -0.0005;
 scene.add(dirLight1);
 
 // Secondary fill light (non-harsh)
-const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.1);
+const dirLight2 = new THREE.DirectionalLight(0xffffff, 0);
 dirLight2.position.set(-200, 200, -100);
 dirLight2.castShadow = false;
 scene.add(dirLight2);
 
 // Ceiling bulb — local light source that also casts shadows
-const ceilingBulb = new THREE.PointLight(0xffeecc, 0.9, 1000, 0);
+const ceilingBulb = new THREE.PointLight(0xffeecc, 0.9, 1000, 0.3);
 ceilingBulb.position.set(0, 180, 0);
 ceilingBulb.castShadow = true;
 ceilingBulb.shadow.mapSize.width = 1024;
