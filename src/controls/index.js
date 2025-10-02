@@ -2,7 +2,7 @@
 import * as THREE from 'https://unpkg.com/three@0.180.0/build/three.module.js';
 import { OrbitControls } from 'https://unpkg.com/three@0.180.0/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'https://unpkg.com/three@0.180.0/examples/jsm/loaders/GLTFLoader.js';
-import { CharacterControls } from './controls.js';
+import { CharacterControls } from './movement.js';
 // scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xaaaaaa);
