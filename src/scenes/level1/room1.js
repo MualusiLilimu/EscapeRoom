@@ -84,15 +84,15 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
 export function createRoom1() {
     const room = new THREE.Group();
     //TODO design a roome here
-    const plane =  createPlane(20000,1000,'/textures/pave.jpg');
+    const plane =  createPlane(20000,1000,'/public/textures/pave.jpg');
     room.add(plane);
 
-    const floortexture = loadTexture('/textures/tile.jpg');
+    const floortexture = loadTexture('/public/textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
     floortexture.wrapT = THREE.RepeatWrapping;
     floortexture.repeat.set(1.5, 1);
-    const walltexture = loadTexture('/textures/wall.jpg');
-    const ceilingTexture = loadTexture('/textures/ceiling.jpg');
+    const walltexture = loadTexture('/public/textures/wall.jpg');
+    const ceilingTexture = loadTexture('/public/textures/ceiling.jpg');
     walltexture.wrapS = THREE.RepeatWrapping;
     walltexture.wrapT = THREE.RepeatWrapping;
 
@@ -150,7 +150,7 @@ export function createRoom1() {
 
     //door
     // add a door in wall1
-    const doorTexture = '/textures/door.jpeg'; // replace with your door texture
+    const doorTexture = '/public/textures/door.jpeg'; // replace with your door texture
     const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture); 
     room.add(door);
 
@@ -158,49 +158,55 @@ export function createRoom1() {
     //////////// Furnitures //////////////////////
 
     //cage
-    loadModel('/models/cage.glb',
+    loadModel('/public/models/cage.glb',
       {x:-8,y:0,z:-9,scale:0.05},
       (cage)=>{
         room.add(cage);
       }
     );
+    loadModel('/public/models/steamDeck.glb',
+      {x:-3,y:4,z:10,scale:8.1,rotation:{y:Math.PI}},
+      (steamDeck)=>{
+        room.add(steamDeck);
+      }
+    );
     //locker
-    loadModel('/models/locker.glb',
+    loadModel('/public/models/locker.glb',
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //dardboard
-    loadModel('/models/dartboard.glb',
+    loadModel('/public/models/dartboard.glb',
       {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //old couch
-    loadModel('/models/old_couch.glb',
+    loadModel('/public/models/old_couch.glb',
       {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
       (cage)=>{
         room.add(cage);
       }
     );
     //old table
-    loadModel('/models/old_wooden_table.glb',
+    loadModel('/public/models/old_wooden_table.glb',
       {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
       (cage)=>{
         room.add(cage);
       }
     );
     //window
-    loadModel('/models/window.glb',
+    loadModel('/public/models/window.glb',
       {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
       (cage)=>{
         room.add(cage);
       }
     );
     //chest
-    loadModel('/models/chest.glb',
+    loadModel('/public/models/chest.glb',
       {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
       (cage)=>{
         room.add(cage);
@@ -208,7 +214,7 @@ export function createRoom1() {
     );
     
     //wall lamp
-    loadModel('/models/wall_lamp.glb',
+    loadModel('/public/models/wall_lamp.glb',
       {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
       (cage)=>{
         cage.castShadow = true;
@@ -229,7 +235,7 @@ export function createRoom1() {
     );
 
 //ceiling light
-loadModel('/models/ceiling_light.glb',
+loadModel('/public/models/ceiling_light.glb',
   {x:-6,y:-17.5,z:-30,scale:12,rotation:{y:-Math.PI/2}},
   (ceilingLight)=>{
     room.add(ceilingLight);
