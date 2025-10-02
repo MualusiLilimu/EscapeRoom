@@ -7,8 +7,9 @@ import { loadModel } from '../../../utils/loader.js';
 
 
 
-const scaryPaintingURL = 'models/A.webp'; 
-// placeholder: later you can replace with your own creepy image if you generate one
+const scaryPaintingURL = '../../../../public/textures/A.webp'; 
+
+
 
 export function createRoom2() {
     const room = new THREE.Group();
@@ -79,10 +80,75 @@ export function createRoom2() {
     const floor = createFloor(roomWidth, roomDepth, 50);
     room.add(floor);
 
-    // -------------------------
-    // Door (realistic with frame and handle)
-    const door = createDoorWithFrame(170, 400, 10, 0, 200, roomDepth / 2 + wallThickness / 2);
-    room.add(door);
+loadModel(
+    '../../../../public/models/door.glb',
+    { x: 0, y: 0, z: 0, scale: 1, rotation: { y: Math.PI } }, 
+    (doorModel) => {
+
+        // Wrap door in a group to handle scaling/centering
+        const doorGroup = new THREE.Group();
+        doorGroup.add(doorModel);
+
+        // Center the door model inside the group
+        const bbox = new THREE.Box3().setFromObject(doorModel);
+        const center = bbox.getCenter(new THREE.Vector3());
+
+        doorModel.position.x -= center.x;           // center X
+        doorModel.position.y -= bbox.min.y;         // put base at y=0
+        doorModel.position.z -= center.z;           // center Z
+
+        // Scale the door to fit the room
+        const doorScale = 1.5; // tweak this until it matches old door size
+        doorGroup.scale.set(doorScale, doorScale, doorScale);
+
+        // Place at the same coordinates as the old door
+        const wallThickness = 10;
+        const roomDepth = 1000;
+        doorGroup.position.set(0, 0, roomDepth / 2 + wallThickness / 2);
+
+        room.add(doorGroup);
+        console.log("✅ Prison door added at center:", doorGroup);
+    }
+);
+
+// -------------------------
+// Add second door on the back wall (right corner)
+loadModel(
+    '../../../../public/models/door.glb',
+    { x: 0, y: 0, z: 0, scale: 1, rotation: { y: Math.PI } }, 
+    (doorModel) => {
+
+        const doorGroup = new THREE.Group();
+        doorGroup.add(doorModel);
+
+        // Center the door inside the group
+        const bbox = new THREE.Box3().setFromObject(doorModel);
+        const center = bbox.getCenter(new THREE.Vector3());
+
+        doorModel.position.x -= center.x;
+        doorModel.position.y -= bbox.min.y;
+        doorModel.position.z -= center.z;
+
+        // Scale to match first door
+        const doorScale = 1.5;
+        doorGroup.scale.set(doorScale, doorScale, doorScale);
+
+        // Position on back wall, right corner
+        const wallThickness = 10;
+        const roomWidth = 1000;
+        const roomDepth = 1000;
+
+        // Right corner x: positive half width minus some margin
+        // z: back wall z-position
+        const margin = 50; // adjust so door isn't flush with corner
+        doorGroup.position.set(roomWidth/2 - 100, 0, -roomDepth/2 - wallThickness/2);
+
+        room.add(doorGroup);
+        console.log("✅ Second door added at back wall right corner:", doorGroup);
+    }
+);
+
+
 
     // -------------------------
     // Hanging Lights (modern realistic)
@@ -116,19 +182,7 @@ export function createRoom2() {
         room.add(pointLight);
     });
 
-    // -------------------------
-    // Curtain window on LEFT wall
-    // const curtainWindow = createCurtainWindow(300, 300, -roomWidth/2 - wallThickness/2 + 1, 300, 0);
-    // room.add(curtainWindow);
-
-    // Replace window with "picture" placeholder
-const picture = createPictureOnWall(
-    300, 300,
-    -roomWidth/2 + 5, 300, 0,
-    'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
-    Math.PI / 2  // <-- THIS IS THE ROTATION
-);
-
+  
 
 
 
@@ -155,24 +209,15 @@ keyboard.position.set(-350, 81.5, 390); // slightly in front of monitor
 room.add(keyboard);
 
 
-
-
-
-// Load realistic sofa facing opposite the window
-loadSofa(
-    { x: 150, y: 0, z: -10 }, // adjust position as needed
-    150,                       // scale
-    room                     // add to the room group
+loadModel(
+    '../../../../public/models/old_bed.glb',
+    { x: 250, y: 0, z: 50, scale: 120, rotation: { y: -Math.PI/2  } },
+    (Sofamodel) => {
+        room.add(Sofamodel);
+        console.log("✅ drawer added:", Sofamodel);
+    }
 );
 
-// Load drawer at back wall, left corner
-// loadDrawer(
-//     { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 150 }, // adjust as needed
-//     200,  // scale
-//     room
-// );
-
-// Load prison door GLB
 loadModel(
     '../../../../public/models/box_wooden_closet_supplies.glb',
     { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 110, scale: 200, rotation: { y: -Math.PI/2  } },
@@ -182,26 +227,6 @@ loadModel(
     }
 );
 
-
-
-
-// Place table in front of sofa
-loadTable(
-    { x: 150, y: 0, z: 100 }, // tweak 'z' to control distance from sofa
-    120, // scale to match room and sofa
-    room
-);
-
-// Place treasure chest slightly behind sofa
-// loadTreasureChest(
-//     { x: 150, y: 0, z: -80 }, // tweak z for "behind"
-//     50,  // smaller scale so it fits
-//     room
-// );
-
-
-
-// Window (using GLB model instead of old function)
  loadModel(
    '../../../../public/models/window2.glb',
    { x: -417.5, y: 300, z: -30, scale: 120, rotation: { y: Math.PI / 2 } }, 
@@ -215,9 +240,6 @@ loadTable(
 
 
 
-
-
-// Add scary painting on the back wall
 addScaryPainting(room);
 
 
@@ -232,50 +254,6 @@ addScaryPainting(room);
     return room;
 }
 
-// -------------------------
-// REALISTIC Door with Frame and Handle
-function createDoorWithFrame(width, height, depth, posX, posY, posZ) {
-    const doorGroup = new THREE.Group();
-
-    // Door frame
-    const frameThickness = 10;
-    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8, metalness: 0 });
-    const frameGeometry = new THREE.BoxGeometry(width + frameThickness*2, height + frameThickness*2, depth + frameThickness);
-    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-    frame.position.set(0, height/2, 0);
-    frame.castShadow = true;
-    frame.receiveShadow = true;
-    doorGroup.add(frame);
-
-    // Door panel
-    const textureLoader = new THREE.TextureLoader();
-    const doorTexture = textureLoader.load('https://threejs.org/examples/textures/wood.jpg');
-    doorTexture.encoding = THREE.sRGBEncoding;
-
-    doorTexture.wrapS = doorTexture.wrapT = THREE.RepeatWrapping;
-    doorTexture.repeat.set(1,1);
-    const doorMaterial = new THREE.MeshStandardMaterial({ map: doorTexture, roughness: 1, metalness: 0 });
-    const doorGeometry = new THREE.BoxGeometry(width, height, depth);
-    const door = new THREE.Mesh(doorGeometry, doorMaterial);
-    door.position.set(0, height/2, 0);
-    door.castShadow = true;
-    door.receiveShadow = true;
-    doorGroup.add(door);
-
-    // Handle
-    const handleGeometry = new THREE.CylinderGeometry(25, 4, 30, 32);
-    const handleMaterial = new THREE.MeshStandardMaterial({ color: "red", metalness: 0.8, roughness: 0.4 });
-    const handle = new THREE.Mesh(handleGeometry, handleMaterial);
-    handle.rotation.z = Math.PI/2;
-    handle.position.set(width/2 - 15, height/2, depth/2 + 2);
-    handle.castShadow = true;
-    handle.receiveShadow = true;
-    doorGroup.add(handle);
-
-    doorGroup.position.set(posX, 0, posZ);
-
-    return doorGroup;
-}
 
 // -------------------------
 // Floor Function
@@ -463,187 +441,6 @@ function createKeyboard() {
     }
 
     return keyboard;
-}
-
-
-function loadSofa(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
-    const loader = new GLTFLoader();
-
-    loader.load(
-        'models/sofa/sofa_02_4k.gltf',
-        function (gltf) {
-            console.log("Sofa loaded successfully!"); // <- check console
-
-            const sofa = gltf.scene;
-            sofa.scale.set(scale, scale, scale);
-            sofa.position.set(position.x, position.y, position.z);
-            sofa.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-            sceneGroup.add(sofa);
-        },
-        undefined,
-        function (error) {
-            console.error('Error loading sofa:', error);
-        }
-    );
-}
-
-
-function loadDrawer(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
-    console.log("Calling loadDrawer at position:", position, "with scale:", scale); // <- NEW
-
-    const loader = new GLTFLoader();
-
-    loader.load(
-        'models/drwing/painted_wooden_cabinet_4k.gltf',
-        function(gltf) {
-            console.log("Drawer model loaded successfully!"); // <- NEW
-            const drawer = gltf.scene;
-            drawer.scale.set(scale, scale, scale);
-            drawer.position.set(position.x, position.y, position.z);
-
-            drawer.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-
-            sceneGroup.add(drawer);
-            console.log("Drawer added to sceneGroup!"); // <- NEW
-        },
-        undefined,
-        function(error) {
-            console.error('Error loading drawer:', error);
-        }
-    );
-}
-
-// Load round wooden table in front of sofa
-function loadTable(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
-    const loader = new GLTFLoader();
-
-    loader.load(
-        'models/tafel/round_wooden_table_02_4k.gltf',
-        function (gltf) {
-            console.log("Table loaded successfully!");
-            const table = gltf.scene;
-            table.scale.set(scale, scale, scale);
-            table.position.set(position.x, position.y, position.z);
-            table.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-            sceneGroup.add(table);
-        },
-        undefined,
-        function (error) {
-            console.error('Error loading table:', error);
-        }
-    );
-}
-
-
-// Load treasure chest
-function loadTreasureChest(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
-    const loader = new GLTFLoader();
-
-    loader.load(
-        'models/treasure_chest_4k.gltf/treasure_chest_4k.gltf',
-        function (gltf) {
-            console.log("Treasure chest loaded successfully!");
-            const chest = gltf.scene;
-            chest.scale.set(scale, scale, scale);
-            chest.position.set(position.x, position.y, position.z);
-
-            chest.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-
-            sceneGroup.add(chest);
-        },
-        undefined,
-        function (error) {
-            console.error('Error loading treasure chest:', error);
-        }
-    );
-}
-
-
-function createPictureOnWall(width, height, posX, posY, posZ, imageURL, rotationY = 0) {
-    const group = new THREE.Group();
-    group.position.set(posX, posY, posZ);
-    group.rotation.y = rotationY; // rotate to face the room
-
-    const frameThickness = 15;
-
-    // FRAME
-    const frameGeometry = new THREE.BoxGeometry(width, height, frameThickness);
-    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.4, metalness: 0.6 });
-    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-    frame.position.set(0, 0, 0);
-    group.add(frame);
-
-    // PICTURE
-    const textureLoader = new THREE.TextureLoader();
-    const pictureTexture = textureLoader.load(
-        imageURL,
-        () => { pictureTexture.encoding = THREE.sRGBEncoding; } // ensure correct colors
-    );
-
-    const pictureGeometry = new THREE.PlaneGeometry(width - 20, height - 20);
-    const pictureMaterial = new THREE.MeshStandardMaterial({
-        map: pictureTexture,
-        side: THREE.FrontSide
-    });
-
-    const picture = new THREE.Mesh(pictureGeometry, pictureMaterial);
-
-    // Place picture slightly in front of the frame
-    picture.position.set(0, 0, frameThickness / 2 + 0.5);
-    group.add(picture);
-
-    return group;
-}
-
-
-function loadWindow(position = {x:0, y:0, z:0}, scale = 1, sceneGroup) {
-    const loader = new GLTFLoader();
-
-    loader.load(
-        'models/window/scene.gltf',
-        function (gltf) {
-            console.log("Window loaded successfully!");
-            const windowModel = gltf.scene;
-            windowModel.scale.set(scale, scale, scale);
-            windowModel.position.set(position.x, position.y, position.z);
-
-            // rotate to face into the room if necessary
-            windowModel.rotation.y = Math.PI / 2; // adjust if needed
-
-            windowModel.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
-
-            sceneGroup.add(windowModel);
-        },
-        undefined,
-        function (error) {
-            console.error('Error loading window:', error);
-        }
-    );
 }
 
 
