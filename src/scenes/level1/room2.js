@@ -1,6 +1,8 @@
 // room2.js
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+import {loadTexture} from '../../../utils/loader.js';
+import { loadModel } from '../../../utils/loader.js';
 
 
 
@@ -164,11 +166,23 @@ loadSofa(
 );
 
 // Load drawer at back wall, left corner
-loadDrawer(
-    { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 150 }, // adjust as needed
-    200,  // scale
-    room
+// loadDrawer(
+//     { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 150 }, // adjust as needed
+//     200,  // scale
+//     room
+// );
+
+// Load prison door GLB
+loadModel(
+    '../../../../public/models/box_wooden_closet_supplies.glb',
+    { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 110, scale: 200, rotation: { y: -Math.PI/2  } },
+    (doorModel) => {
+        room.add(doorModel);
+        console.log("✅ drawer added:", doorModel);
+    }
 );
+
+
 
 
 // Place table in front of sofa
@@ -179,17 +193,28 @@ loadTable(
 );
 
 // Place treasure chest slightly behind sofa
-loadTreasureChest(
-    { x: 150, y: 0, z: -80 }, // tweak z for "behind"
-    50,  // smaller scale so it fits
-    room
-);
+// loadTreasureChest(
+//     { x: 150, y: 0, z: -80 }, // tweak z for "behind"
+//     50,  // smaller scale so it fits
+//     room
+// );
 
-loadWindow(
-    { x: -417.5, y: 300, z: 0}, // perfectly on left wall, centered vertically and horizontally
-    100,                         // scale
-    room
-);
+
+
+// Window (using GLB model instead of old function)
+ loadModel(
+   '../../../../public/models/window2.glb',
+   { x: -417.5, y: 300, z: -30, scale: 120, rotation: { y: Math.PI / 2 } }, 
+   (windowModel) => {
+     room.add(windowModel);
+  console.log("✅ Window added:", windowModel);
+   }
+ );
+
+ 
+
+
+
 
 
 // Add scary painting on the back wall
@@ -281,70 +306,6 @@ function createFloor(roomWidth, roomDepth, tileSize = 50) {
     return floorGroup;
 }
 
-// -------------------------
-// Curtain Window Function (unchanged)
-function createCurtainWindow(width, height, posX, posY, posZ) {
-    const group = new THREE.Group();
-    group.rotation.y = Math.PI / 2;
-    group.position.set(posX, posY, posZ);
-
-    const frameThickness = 15;
-    const frameGeometry = new THREE.BoxGeometry(width, height, frameThickness);
-    const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.4, metalness: 0.6 });
-    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-    frame.position.set(0, 0, 0);
-    group.add(frame);
-
-    const textureLoader = new THREE.TextureLoader();
-    const cityTexture = textureLoader.load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg');
-    const glassGeometry = new THREE.PlaneGeometry(width - 20, height - 20);
-    const glassMaterial = new THREE.MeshBasicMaterial({
-        map: cityTexture,
-        transparent: true,
-        opacity: 0.9,
-        side: THREE.DoubleSide
-    });
-    const glass = new THREE.Mesh(glassGeometry, glassMaterial);
-    glass.position.set(0, 0, frameThickness / 2 + 0.1);
-    group.add(glass);
-
-    const railGeometry = new THREE.CylinderGeometry(5, 5, width + 20, 16);
-    const railMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, metalness: 0.8, roughness: 0.2 });
-    const rail = new THREE.Mesh(railGeometry, railMaterial);
-    rail.rotation.z = Math.PI / 2;
-    rail.position.set(0, height / 2 + 10, frameThickness / 2 + 1);
-    group.add(rail);
-
-    const curtainWidth = (width - 40) / 2;
-    const curtainHeight = height;
-    const curtainGeometry = new THREE.PlaneGeometry(curtainWidth, curtainHeight, 20, 20);
-    const curtainMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, side: THREE.DoubleSide });
-
-    const leftCurtain = new THREE.Mesh(curtainGeometry, curtainMaterial);
-    leftCurtain.position.set(-curtainWidth / 2 - 10, 0, frameThickness / 2 + 2);
-    group.add(leftCurtain);
-
-    const rightCurtain = new THREE.Mesh(curtainGeometry, curtainMaterial);
-    rightCurtain.position.set(curtainWidth / 2 + 10, 0, frameThickness / 2 + 2);
-    group.add(rightCurtain);
-
-    group.userData.animate = (time) => {
-        const amplitude = 2.5;
-        const speed = 0.0015;
-        const leftPos = leftCurtain.geometry.attributes.position.array;
-        const rightPos = rightCurtain.geometry.attributes.position.array;
-
-        for (let i = 0; i < leftPos.length; i += 3) {
-            leftPos[i] = leftCurtain.position.x + Math.sin(time * speed + leftPos[i + 1] * 0.03) * amplitude;
-            rightPos[i] = rightCurtain.position.x + Math.sin(time * speed + rightPos[i + 1] * 0.03 + 1) * amplitude;
-        }
-
-        leftCurtain.geometry.attributes.position.needsUpdate = true;
-        rightCurtain.geometry.attributes.position.needsUpdate = true;
-    };
-
-    return group;
-}
 
 // -------------------------
 // Realistic Desk Function
