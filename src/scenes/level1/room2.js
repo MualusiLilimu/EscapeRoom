@@ -219,6 +219,22 @@ loadModel(
 );
 
 loadModel(
+    '../../../../public/models/treasure_chest.glb',
+    { 
+        x: 250,      // same as bed X
+        y: 0,        // floor level
+        z: 0,       // same as bed Z
+        scale: 0.5,   // adjust scale so it fits under bed
+        rotation: { y: -Math.PI/2 }
+    },
+    (chestModel) => {
+        room.add(chestModel);
+        console.log("✅ Chest added under the bed:", chestModel);
+    }
+);
+
+
+loadModel(
     '../../../../public/models/box_wooden_closet_supplies.glb',
     { x: -roomWidth / 2 + 200, y: 0, z: -roomDepth / 2 + 110, scale: 200, rotation: { y: -Math.PI/2  } },
     (doorModel) => {
