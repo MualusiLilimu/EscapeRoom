@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createRoom1 } from '../room1.js';
+import { setupFirstPersonControls } from '../../../controls/controls.js'; 
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
@@ -13,33 +13,27 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 5, 10);
-camera.lookAt(-3,4,10);
+
+camera.position.set(0, 6, 10);
+
 
 // --- Renderer ---
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;                 // enable shadows
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
-// --- Controls ---
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(15, 5, 15); // focus around room center
-controls.update();
+// --- First-Person Controls ---
+const controls = setupFirstPersonControls(camera, renderer.domElement);
 
 // --- Lights ---
-// Ambient light for soft illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
 
-
-// Directional light that casts shadows
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.position.set(40, 60, 40);
 dirLight.castShadow = true;
-
-// Shadow camera settings
 dirLight.shadow.mapSize.width = 2048;
 dirLight.shadow.mapSize.height = 2048;
 dirLight.shadow.camera.near = 1;
@@ -48,20 +42,16 @@ dirLight.shadow.camera.left = -50;
 dirLight.shadow.camera.right = 50;
 dirLight.shadow.camera.top = 50;
 dirLight.shadow.camera.bottom = -50;
-
 scene.add(dirLight);
 
 // --- Room Setup ---
 const room = createRoom1();
-
-// Enable shadows on room objects
 room.traverse((child) => {
   if (child.isMesh) {
     child.castShadow = true;
     child.receiveShadow = true;
   }
 });
-
 scene.add(room);
 
 // --- Window Resize Handling ---
@@ -72,9 +62,13 @@ window.addEventListener('resize', () => {
 });
 
 // --- Animation Loop ---
+const clock = new THREE.Clock();
+
 function animate() {
   requestAnimationFrame(animate);
-  controls.update();
+  const delta = clock.getDelta();
+  controls.update(delta);
   renderer.render(scene, camera);
 }
+
 animate();

@@ -8,7 +8,7 @@
 
 import * as THREE from 'three';
 import { createControls } from './camera.js';
-
+import { setupFirstPersonControls } from './controls/controls.js';
 
 import { createPlayer } from './objects/player.js';
 import { createGame } from './game.js';
@@ -26,15 +26,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 5, 10);
+camera.position.set(0, 6, 10);
 camera.lookAt(0,5,0);
-
-// camera movement
-const controls = new createControls(camera, document.body);
-// Click to lock pointer
-document.body.addEventListener('click', () => {
-  controls.lock();
-});
 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -43,6 +36,7 @@ renderer.shadowMap.enabled = true;                 // enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
 
+const controls = setupFirstPersonControls(camera, renderer.domElement);
 
 // --- Add lights ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
@@ -101,10 +95,13 @@ room.traverse((child) => {
 // --- Add first room to scene ---
 scene.add(game.getCurrentRoom());
 
+const clock = new THREE.Clock();
 // --- Animation loop ---
 function animate() {
   requestAnimationFrame(animate);
   game.update();
+  const delta = clock.getDelta();
+  controls.update(delta);
   renderer.render(scene, camera);
 }
 animate();
