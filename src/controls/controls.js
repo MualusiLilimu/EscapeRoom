@@ -5,7 +5,7 @@ export function setupFirstPersonControls(camera, domElement = document.body) {
     const sprintSpeed = 12.0;  // sprint speed
     let moveSpeed = normalSpeed;
 
-    const lookSpeed = 0.002; // mouse sensitivity
+    const lookSpeed = 0.001; // mouse sensitivity
 
     const keys = { forward: false, backward: false, left: false, right: false, sprint: false };
     let pitch = 0;

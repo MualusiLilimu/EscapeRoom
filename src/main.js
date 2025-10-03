@@ -8,8 +8,10 @@
 
 import * as THREE from 'three';
 import { createControls } from './camera.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { setupFirstPersonControls } from './controls/controls.js';
-
+import { CharacterControls } from './controls/movement.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createPlayer } from './objects/player.js';
 import { createGame } from './game.js';
 import { createLevel1 } from './scenes/level1/index.js';
@@ -37,6 +39,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
 
 const controls = setupFirstPersonControls(camera, renderer.domElement);
+const orbitControls = new OrbitControls(camera, renderer.domElement);
+orbitControls.target.set(15, 5, 15);
+orbitControls.update();
 
 // --- Add lights ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
@@ -94,14 +99,56 @@ room.traverse((child) => {
 
 // --- Add first room to scene ---
 scene.add(game.getCurrentRoom());
-
+let characterControls = null;
+const keysPressed = {};
 const clock = new THREE.Clock();
+
+new GLTFLoader().load('/models/player.glb', gltf => {
+    const model = gltf.scene;
+    model.traverse(obj => {
+        if (obj.isMesh) {
+            obj.castShadow = true;
+            obj.receiveShadow = true;
+        }
+    });
+
+    model.position.set(0, 0.5, 0);
+    model.scale.set(5, 5, 5);
+    scene.add(model);
+
+    const mixer = new THREE.AnimationMixer(model);
+    const animationsMap = new Map();
+    gltf.animations.forEach(clip => animationsMap.set(clip.name, mixer.clipAction(clip)));
+
+    characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'idle');
+});
+
+document.addEventListener('keydown', event => {
+    keysPressed[event.key.toLowerCase()] = true;
+
+    if (event.key.toLowerCase() === 'v' && characterControls) {
+        characterControls.toggleCameraMode();
+    }
+}, false);
+
+document.addEventListener('keyup', event => {
+    keysPressed[event.key.toLowerCase()] = false;
+}, false);
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+
 // --- Animation loop ---
 function animate() {
   requestAnimationFrame(animate);
   game.update();
   const delta = clock.getDelta();
-  controls.update(delta);
+  if (characterControls) characterControls.update(delta, keysPressed);
+    orbitControls.update();
   renderer.render(scene, camera);
 }
 animate();
