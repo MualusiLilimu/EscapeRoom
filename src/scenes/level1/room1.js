@@ -4,9 +4,10 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
+import { Scene } from 'three';
 
 
-
+puzz1Models = new THREE.Group();
 // everything you want to design for this ROOM you should do it inside createRoom function
 // you are also free to create functions outside the createRoom function and call them inside afterwards
 
@@ -164,12 +165,19 @@ export function createRoom1() {
         room.add(cage);
       }
     );
+
+    
     loadModel('/public/models/steamDeck.glb',
-      {x:-3,y:4,z:10,scale:8.1,rotation:{y:Math.PI}},
+      {x:-3,y:4.2,z:10,scale:4,rotation:{z:Math.PI/4}},
       (steamDeck)=>{
-        room.add(steamDeck);
+        steamDeck.name = "steamDeck";
+        console.log("Loaded model:", steamDeck);
+        steamDeck.traverse(obj => console.log(obj.type, obj.name));
+        puzz1Models.add(steamDeck);
+      
       }
     );
+    room.add(puzz1Models);
     //locker
     loadModel('/public/models/locker.glb',
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
@@ -255,3 +263,6 @@ loadModel('/public/models/ceiling_light.glb',
 );
   return room;
 }
+export default function puzz1Models(){
+  return puzz1Models;
+} 

@@ -1,10 +1,13 @@
 import * as THREE from 'three';
-import { createRoom1 } from '../room1.js';
-import { setupFirstPersonControls } from '../../../controls/controls.js'; 
+import { createRoom1,puzz1Models} from '../room1.js';
+import { setupFirstPersonControls} from '../../../controls/controls.js'; 
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xaaaaaa);
+const raycaster = new THREE.Raycaster();
+document.addEventListener('mousedown', onMouseDown);
+
 
 // --- Camera ---
 const camera = new THREE.PerspectiveCamera(
@@ -15,6 +18,20 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 camera.position.set(0, 6, 10);
+function onMouseDown(event) {
+  const coords = new THREE.Vector2(
+    (event.clientX/renderer.domElement.clientWidth)*2-1,
+    -(event.clientY/renderer.domElement.clientHeight)*2+1
+  );
+  raycaster.setFromCamera(coords,camera);
+  const intersects = raycaster.intersectObjects(puzz1Models.children,true);
+  if(intersects.length>0){
+    console.log("Intersected object:", intersects[0].object);
+  } else {
+    console.log("No intersections");
+  }
+}
+
 
 
 // --- Renderer ---
