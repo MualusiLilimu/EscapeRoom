@@ -20,6 +20,7 @@ function createGame(scene, player) {
 
   function nextRoom() {
     currentRoomIndex++;
+    return levels[currentLevelIndex].rooms[currentRoomIndex];
     
   }
 
