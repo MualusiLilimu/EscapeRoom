@@ -249,7 +249,7 @@ loadModel('/public/models/ceiling_light.glb',
     room.add(ceilingLight);
 
     // Create the actual light source
-    const bulbLight = new THREE.PointLight(0xfff2cc, 20, 50); 
+    const bulbLight = new THREE.PointLight(0xfff2cc, 50, 50); 
     bulbLight.position.set(0, 10, 10);
     bulbLight.castShadow = true;
 
