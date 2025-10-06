@@ -46,21 +46,21 @@ orbitControls.update();
 // --- Add lights ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
-// Directional light that casts shadows
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(40, 60, 40);
-directionalLight.castShadow = true;
+// // Directional light that casts shadows
+// const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// directionalLight.position.set(40, 60, 40);
+// directionalLight.castShadow = true;
 
-// Shadow camera settings
-directionalLight.shadow.mapSize.width = 2048;
-directionalLight.shadow.mapSize.height = 2048;
-directionalLight.shadow.camera.near = 1;
-directionalLight.shadow.camera.far = 200;
-directionalLight.shadow.camera.left = -50;
-directionalLight.shadow.camera.right = 50;
-directionalLight.shadow.camera.top = 50;
-directionalLight.shadow.camera.bottom = -50;
-scene.add(directionalLight);
+// // Shadow camera settings
+// directionalLight.shadow.mapSize.width = 2048;
+// directionalLight.shadow.mapSize.height = 2048;
+// directionalLight.shadow.camera.near = 1;
+// directionalLight.shadow.camera.far = 200;
+// directionalLight.shadow.camera.left = -50;
+// directionalLight.shadow.camera.right = 50;
+// directionalLight.shadow.camera.top = 50;
+// directionalLight.shadow.camera.bottom = -50;
+// scene.add(directionalLight);
 
 
 window.addEventListener('resize', () => {
@@ -87,10 +87,19 @@ game.addLevel(level2);
 game.addLevel(level3);
 game.addLevel(level4);
 
-const room = game.getCurrentRoom();
+const current_room = game.getCurrentRoom();
+const next_room = game.nextRoom();
+next_room.position.set(74.5, 0, 20);
 
 // Enable shadows on room objects
-room.traverse((child) => {
+current_room.traverse((child) => {
+  if (child.isMesh) {
+    child.castShadow = true;
+    child.receiveShadow = true;
+  }
+});
+
+next_room.traverse((child) => {
   if (child.isMesh) {
     child.castShadow = true;
     child.receiveShadow = true;
@@ -98,7 +107,8 @@ room.traverse((child) => {
 });
 
 // --- Add first room to scene ---
-scene.add(game.getCurrentRoom());
+scene.add(current_room);
+scene.add(next_room);
 let characterControls = null;
 const keysPressed = {};
 const clock = new THREE.Clock();

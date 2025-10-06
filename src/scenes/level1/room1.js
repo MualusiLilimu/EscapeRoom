@@ -135,25 +135,7 @@ export function createRoom1() {
     const wall6 =  createWall(31,15,1,29.5,8,15.5,"white",walltexture);
     wall6.receiveShadow = true;
     room.add(wall6);
-
-    const wall7 = createWall(1,15,4,44.5,8,18,"white",walltexture);
-    wall7.receiveShadow = true;
-    room.add(wall7);
-
-    const wall8 = createWall(1,15,4,44.5,8,27,"white",walltexture);
-    wall8.receiveShadow = true;
-    room.add(wall8);
-
-    const wall9 = createWall(1,5,5,44.5,13,22.5,"white",walltexture);
-    wall9.receiveShadow = true;
-    room.add(wall9);
-
     //door
-    // add a door in wall1
-    const doorTexture = '/textures/door.jpeg'; // replace with your door texture
-    const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture); 
-    room.add(door);
-
 
     //////////// Furnitures //////////////////////
 
@@ -167,52 +149,52 @@ export function createRoom1() {
     //locker
     loadModel('/models/locker.glb',
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
-      (cage)=>{
-        room.add(cage);
+      (locker)=>{
+        room.add(locker);
       }
     );
     //dardboard
     loadModel('/models/dartboard.glb',
       {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
-      (cage)=>{
-        room.add(cage);
+      (dart)=>{
+        room.add(dart);
       }
     );
     //old couch
     loadModel('/models/old_couch.glb',
       {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
-      (cage)=>{
-        room.add(cage);
+      (couch)=>{
+        room.add(couch);
       }
     );
     //old table
     loadModel('/models/old_wooden_table.glb',
       {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
-      (cage)=>{
-        room.add(cage);
+      (table)=>{
+        room.add(table);
       }
     );
     //window
     loadModel('/models/window.glb',
       {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
-      (cage)=>{
-        room.add(cage);
+      (window)=>{
+        room.add(window);
       }
     );
     //chest
     loadModel('/models/chest.glb',
       {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
-      (cage)=>{
-        room.add(cage);
+      (chest)=>{
+        room.add(chest);
       }
     );
     
     //wall lamp
     loadModel('/models/wall_lamp.glb',
       {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
-      (cage)=>{
+      (lamp)=>{
         cage.castShadow = true;
-        room.add(cage);
+        room.add(lamp);
 
         const wallLight = new THREE.SpotLight(0xffd27f, 2, 40, Math.PI / 2, 0.5, 1);
         wallLight.position.set(25, 8, 28);
