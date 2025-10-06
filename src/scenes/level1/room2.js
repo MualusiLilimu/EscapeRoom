@@ -80,8 +80,8 @@ function createLampWithLight(x, y, z, scale = 20) {
 export function createRoom2() {
     const room = new THREE.Group();
     //TODO design a room here
-    const plane =  createPlane(20000,1000,'/textures/pave.jpg');
-    room.add(plane);
+    // const plane =  createPlane(20000,1000,'/textures/pave.jpg');
+    // room.add(plane);
 
     const floortexture = loadTexture('/textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
