@@ -84,8 +84,8 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
 export function createRoom1() {
     const room = new THREE.Group();
     //TODO design a roome here
-    const plane =  createPlane(20000,1000,'/textures/pave.jpg');
-    room.add(plane);
+    // const plane =  createPlane(20000,1000,'/textures/pave.jpg');
+    // room.add(plane);
 
     const floortexture = loadTexture('/textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
@@ -193,7 +193,7 @@ export function createRoom1() {
     loadModel('/models/wall_lamp.glb',
       {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
       (lamp)=>{
-        cage.castShadow = true;
+        lamp.castShadow = true;
         room.add(lamp);
 
         const wallLight = new THREE.SpotLight(0xffd27f, 2, 40, Math.PI / 2, 0.5, 1);
@@ -201,8 +201,8 @@ export function createRoom1() {
         wallLight.target.position.set(25, 5, 20);
         wallLight.castShadow = true;
 
-        wallLight.shadow.mapSize.width = 1024;
-        wallLight.shadow.mapSize.height = 1024;
+        wallLight.shadow.mapSize.width = 512;
+        wallLight.shadow.mapSize.height = 512;
         wallLight.shadow.bias = -0.003;
 
         room.add(wallLight);

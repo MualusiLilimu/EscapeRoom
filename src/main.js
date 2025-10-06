@@ -9,6 +9,7 @@
 import * as THREE from 'three';
 import { createControls } from './camera.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { setupFirstPersonControls } from './controls/controls.js';
 import { CharacterControls } from './controls/movement.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -42,24 +43,18 @@ const controls = setupFirstPersonControls(camera, renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.target.set(15, 5, 15);
 orbitControls.update();
+const pointerControls = new PointerLockControls(camera, renderer.domElement);
+scene.add(pointerControls.getObject());
+
+// Click to lock the mouse
+document.addEventListener('click', () => pointerControls.lock());
+pointerControls.addEventListener('lock', () => console.log('Pointer locked'));
+pointerControls.addEventListener('unlock', () => console.log('Pointer unlocked'));
 
 // --- Add lights ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
-// // Directional light that casts shadows
-// const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-// directionalLight.position.set(40, 60, 40);
-// directionalLight.castShadow = true;
-
-// // Shadow camera settings
-// directionalLight.shadow.mapSize.width = 2048;
-// directionalLight.shadow.mapSize.height = 2048;
-// directionalLight.shadow.camera.near = 1;
-// directionalLight.shadow.camera.far = 200;
-// directionalLight.shadow.camera.left = -50;
-// directionalLight.shadow.camera.right = 50;
-// directionalLight.shadow.camera.top = 50;
-// directionalLight.shadow.camera.bottom = -50;
+// bottom = -50;
 // scene.add(directionalLight);
 
 
@@ -108,6 +103,12 @@ next_room.traverse((child) => {
 
 // --- Add first room to scene ---
 scene.add(current_room);
+
+
+// I disabled combining rooms in one scene because it takes a lof o memory,so only the current room will be visible in the scene
+current_room.visible = true;
+next_room.visible = false;
+
 scene.add(next_room);
 let characterControls = null;
 const keysPressed = {};
