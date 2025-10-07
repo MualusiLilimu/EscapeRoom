@@ -1,0 +1,233 @@
+// Here is where the scene for room1 level1 will be coded (that is the collections of objects,puzzles and models for this level will be here)
+// This file also Defines the geometry, textures, and objects for this room.
+
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {loadTexture} from '../../../utils/loader.js';
+import { loadModel } from '../../../utils/loader.js';
+
+
+
+// everything you want to design for this ROOM you should do it inside createRoom function
+// you are also free to create functions outside the createRoom function and call them inside afterwards
+
+
+// function to create walls
+function createWall(width, height, depth, x, y, z, paint,path) {
+  const wallgeometry = new THREE.BoxGeometry(width, height, depth);
+  const wallmaterial = new THREE.MeshPhongMaterial({ map: path});
+  const wall = new THREE.Mesh(wallgeometry, wallmaterial);
+
+  wall.position.set(x, y, z);
+
+  return wall;
+}
+
+// function to create a floor
+function createFloor(width, height, depth, x, y, z, paint,path){
+  const floorgeometry = new THREE.BoxGeometry(width, height, depth);
+  const floormaterial = new THREE.MeshPhongMaterial({map: path});
+  const floor = new THREE.Mesh(floorgeometry, floormaterial);
+
+  floor.position.set(x, y, z);
+
+  return floor
+}
+
+function createPlane(size = 10000, repeat = 1000, texturePath = null, color = "gray") {
+  const loader = new THREE.TextureLoader();
+  let material;
+
+  if (texturePath) {
+    const texture = loader.load(texturePath);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(repeat, repeat);
+
+    material = new THREE.MeshStandardMaterial({ map: texture });
+  } else {
+    material = new THREE.MeshStandardMaterial({ color });
+  }
+
+  const geometry = new THREE.PlaneGeometry(size, size);
+  const plane = new THREE.Mesh(geometry, material);
+
+  plane.rotation.x = -Math.PI / 2; // lay flat
+  plane.receiveShadow = true; // so it catches shadows if you add lighting
+
+  return plane;
+}
+
+// function to create a door
+function createDoor(width, height, depth, x, y, z, texturePath = null, color = "brown") {
+  let material;
+
+  if (texturePath) {
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load(texturePath);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    material = new THREE.MeshPhongMaterial({ map: texture });
+  } else {
+    material = new THREE.MeshPhongMaterial({ color });
+  }
+
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const door = new THREE.Mesh(geometry, material);
+
+  door.position.set(x, y, z);
+  door.castShadow = true;
+
+  return door;
+}
+
+
+export function createRoom1() {
+    const room = new THREE.Group();
+    //TODO design a roome here
+    // const plane =  createPlane(20000,1000,'/textures/pave.jpg');
+    // room.add(plane);
+
+    const floortexture = loadTexture('/textures/tile.jpg');
+    floortexture.wrapS = THREE.RepeatWrapping;
+    floortexture.wrapT = THREE.RepeatWrapping;
+    floortexture.repeat.set(1.5, 1);
+    const walltexture = loadTexture('/textures/wall.jpg');
+    const ceilingTexture = loadTexture('/textures/ceiling.jpg');
+    walltexture.wrapS = THREE.RepeatWrapping;
+    walltexture.wrapT = THREE.RepeatWrapping;
+
+    // floor
+    const floor1 = createFloor(30,1,30,0,0,0,"white",floortexture); 
+    room.add(floor1);
+
+    const floor2 = createFloor(60,1,15,15,0,22.5,"white",floortexture);
+    room.add(floor2);
+
+    //ceiling
+    const ceiling1 = createFloor(30,1,30,0,16,0,"white",ceilingTexture); 
+    room.add(ceiling1);
+
+
+    const ceiling2 = createFloor(60,1,15,15,16,22.5,"white",ceilingTexture);
+    room.add(ceiling2);
+ 
+    // walls
+    const wall1 = createWall(30,15,1,0,8,-14.5,"white",walltexture);
+    wall1.receiveShadow = true;
+    room.add(wall1);
+
+    const wall2 = createWall(1,15,30,14.5,8,0,"white",walltexture);
+    wall2.receiveShadow = true;
+    room.add(wall2);
+
+    const wall3 = createWall(1,15,30,-14.5,8,0,"white",walltexture);
+    wall3.receiveShadow = true;
+    room.add(wall3);
+
+    const wall4 = createWall(1,15,15,-14.5,8,22.5,"white",walltexture);
+    wall4.receiveShadow = true;
+    room.add(wall4);
+
+    const wall5 = createWall(60,15,1,15,8,29.5,"white",walltexture);
+    wall5.receiveShadow = true;
+    room.add(wall5);
+
+    const wall6 =  createWall(31,15,1,29.5,8,15.5,"white",walltexture);
+    wall6.receiveShadow = true;
+    room.add(wall6);
+    //door
+
+    //////////// Furnitures //////////////////////
+
+    //cage
+    loadModel('/models/cage.glb',
+      {x:-8,y:0,z:-9,scale:0.05},
+      (cage)=>{
+        room.add(cage);
+      }
+    );
+    //locker
+    loadModel('/models/locker.glb',
+      {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
+      (locker)=>{
+        room.add(locker);
+      }
+    );
+    //dardboard
+    loadModel('/models/dartboard.glb',
+      {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
+      (dart)=>{
+        room.add(dart);
+      }
+    );
+    //old couch
+    loadModel('/models/old_couch.glb',
+      {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
+      (couch)=>{
+        room.add(couch);
+      }
+    );
+    //old table
+    loadModel('/models/old_wooden_table.glb',
+      {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
+      (table)=>{
+        room.add(table);
+      }
+    );
+    //window
+    loadModel('/models/window.glb',
+      {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
+      (window)=>{
+        room.add(window);
+      }
+    );
+    //chest
+    loadModel('/models/chest.glb',
+      {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
+      (chest)=>{
+        room.add(chest);
+      }
+    );
+    
+    //wall lamp
+    loadModel('/models/wall_lamp.glb',
+      {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
+      (lamp)=>{
+        lamp.castShadow = true;
+        room.add(lamp);
+
+        const wallLight = new THREE.SpotLight(0xffd27f, 2, 40, Math.PI / 2, 0.5, 1);
+        wallLight.position.set(25, 8, 28);
+        wallLight.target.position.set(25, 5, 20);
+        wallLight.castShadow = true;
+
+        wallLight.shadow.mapSize.width = 512;
+        wallLight.shadow.mapSize.height = 512;
+        wallLight.shadow.bias = -0.003;
+
+        room.add(wallLight);
+        room.add(wallLight.target);
+      }
+    );
+
+//ceiling light
+loadModel('/models/ceiling_light.glb',
+  {x:-6,y:-17.5,z:-30,scale:12,rotation:{y:-Math.PI/2}},
+  (ceilingLight)=>{
+    room.add(ceilingLight);
+
+    // Create the actual light source
+    const bulbLight = new THREE.PointLight(0xfff2cc, 50, 50); 
+    bulbLight.position.set(0, 10, 10);
+    bulbLight.castShadow = true;
+
+    bulbLight.shadow.mapSize.width = 1024;
+    bulbLight.shadow.mapSize.height = 1024;
+    bulbLight.shadow.bias = -0.003;
+
+    room.add(bulbLight);
+
+  }
+);
+  return room;
+}

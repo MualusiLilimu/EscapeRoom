@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Escape Room Game</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        font-family: Arial, Helvetica, sans-serif;
+        box-sizing: border-box;
+
+        overflow: hidden;
+      }
+
+      container {
+        width: 100%;
+        height: 100vh;
+        background-color: #ccc;
+      }
+      canvas {
+        display: block;
+      }
+      img {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+
+        display: block;
+        margin: auto;
+        transform: scale(2);
+        transform-origin: center center;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="download (5).jpg" alt="Escape Room" />
+
+    <div class="container">
+      
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
