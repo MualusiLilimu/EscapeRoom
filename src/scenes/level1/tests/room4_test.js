@@ -20,6 +20,8 @@ camera.position.set(0, 5, 15);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
 document.body.appendChild(renderer.domElement);
 
 // OrbitControls for free movement around the room
@@ -28,13 +30,23 @@ controls.target.set(0, 2.5, 0); // focus around room center
 controls.update();
 
 // Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(10, 10, 10);
-scene.add(dirLight);
+// scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+// const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+// dirLight.position.set(10, 10, 10);
+// scene.add(dirLight);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
+scene.add(ambientLight);
 
+
+const room = createRoom4();
+room.traverse((child) => {
+  if (child.isMesh) {
+    child.castShadow = true;
+    child.receiveShadow = true;
+  }
+});
 // Add the room
-scene.add(createRoom4());
+scene.add(room);
 
 // Handle window resize
 window.addEventListener('resize', () => {

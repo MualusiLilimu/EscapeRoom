@@ -3,7 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
 import { Scene } from 'three';
-
+export const collidableObjectsroom1 = [];
 // Fixed: Added 'const' declaration
 const puzz1Models = new THREE.Group();
 puzz1Models.name = "puzz1Models"; // Added name for easier debugging
@@ -140,9 +140,9 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
 export function createRoom1() {
     const room = new THREE.Group();
     
-    const plane = createPlane(20000, 1000, '/public/textures/pave.jpg');
+    // const plane = createPlane(20000, 1000, '/public/textures/pave.jpg');
     plane.name = "ground"; // Added name for debugging
-    room.add(plane);
+    // room.add(plane);
 
     const floortexture = loadTexture('/public/textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
@@ -176,26 +176,31 @@ export function createRoom1() {
     wall1.receiveShadow = true;
     wall1.name = "wall1";
     room.add(wall1);
+    collidableObjectsroom1.push(wall1);
 
     const wall2 = createWall(1, 15, 30, 14.5, 8, 0, "white", walltexture);
     wall2.receiveShadow = true;
     wall2.name = "wall2";
     room.add(wall2);
+    collidableObjectsroom1.push(wall2);
 
     const wall3 = createWall(1, 15, 30, -14.5, 8, 0, "white", walltexture);
     wall3.receiveShadow = true;
     wall3.name = "wall3";
     room.add(wall3);
+    collidableObjectsroom1.push(wall3);
 
     const wall4 = createWall(1, 15, 15, -14.5, 8, 22.5, "white", walltexture);
     wall4.receiveShadow = true;
     wall4.name = "wall4";
     room.add(wall4);
+    collidableObjectsroom1.push(wall4);
 
     const wall5 = createWall(60, 15, 1, 15, 8, 29.5, "white", walltexture);
     wall5.receiveShadow = true;
     wall5.name = "wall5";
     room.add(wall5);
+    collidableObjectsroom1.push(wall5);
 
     const wall6 = createWall(31, 15, 1, 29.5, 8, 15.5, "white", walltexture);
     wall6.receiveShadow = true;
@@ -233,6 +238,7 @@ export function createRoom1() {
         cage.userData.interactable = true;
         cage.userData.type = "cage";
         room.add(cage);
+        collidableObjectsroom1.push(cage);
       }
     );
 
@@ -484,8 +490,8 @@ createTexturedNote(room, '/public/textures/two.png', {x: -13.9, y: 5.8, z: 23},{
         wallLight.position.set(25, 8, 28);
         wallLight.target.position.set(25, 5, 20);
         wallLight.castShadow = true;
-        wallLight.shadow.mapSize.width = 1024;
-        wallLight.shadow.mapSize.height = 1024;
+        wallLight.shadow.mapSize.width = 512;
+        wallLight.shadow.mapSize.height = 512;
         wallLight.shadow.bias = -0.003;
 
         room.add(wallLight);
