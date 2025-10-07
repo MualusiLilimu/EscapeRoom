@@ -5,7 +5,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
 
-
+export const collidableObjectsroom1 = [];
 
 // everything you want to design for this ROOM you should do it inside createRoom function
 // you are also free to create functions outside the createRoom function and call them inside afterwards
@@ -115,26 +115,32 @@ export function createRoom1() {
     const wall1 = createWall(30,15,1,0,8,-14.5,"white",walltexture);
     wall1.receiveShadow = true;
     room.add(wall1);
+    collidableObjectsroom1.push(wall1);
 
     const wall2 = createWall(1,15,30,14.5,8,0,"white",walltexture);
     wall2.receiveShadow = true;
     room.add(wall2);
+    collidableObjectsroom1.push(wall2);
 
     const wall3 = createWall(1,15,30,-14.5,8,0,"white",walltexture);
     wall3.receiveShadow = true;
     room.add(wall3);
+    collidableObjectsroom1.push(wall3);
 
     const wall4 = createWall(1,15,15,-14.5,8,22.5,"white",walltexture);
     wall4.receiveShadow = true;
     room.add(wall4);
+    collidableObjectsroom1.push(wall4);
 
     const wall5 = createWall(60,15,1,15,8,29.5,"white",walltexture);
     wall5.receiveShadow = true;
     room.add(wall5);
+    collidableObjectsroom1.push(wall5);
 
     const wall6 =  createWall(31,15,1,29.5,8,15.5,"white",walltexture);
     wall6.receiveShadow = true;
     room.add(wall6);
+    collidableObjectsroom1.push(wall6);
     //door
 
     //////////// Furnitures //////////////////////
@@ -144,6 +150,7 @@ export function createRoom1() {
       {x:-8,y:0,z:-9,scale:0.05},
       (cage)=>{
         room.add(cage);
+        collidableObjectsroom1.push(cage);
       }
     );
     //locker
@@ -151,6 +158,7 @@ export function createRoom1() {
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
       (locker)=>{
         room.add(locker);
+        collidableObjectsroom1.push(locker);
       }
     );
     //dardboard
@@ -158,6 +166,7 @@ export function createRoom1() {
       {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
       (dart)=>{
         room.add(dart);
+        collidableObjectsroom1.push(dart);
       }
     );
     //old couch
@@ -165,6 +174,7 @@ export function createRoom1() {
       {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
       (couch)=>{
         room.add(couch);
+        collidableObjectsroom1.push(couch);
       }
     );
     //old table
@@ -172,6 +182,7 @@ export function createRoom1() {
       {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
       (table)=>{
         room.add(table);
+        collidableObjectsroom1.push(table);
       }
     );
     //window
@@ -179,6 +190,7 @@ export function createRoom1() {
       {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
       (window)=>{
         room.add(window);
+        collidableObjectsroom1.push(window);
       }
     );
     //chest
@@ -186,6 +198,7 @@ export function createRoom1() {
       {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
       (chest)=>{
         room.add(chest);
+        collidableObjectsroom1.push(chest);
       }
     );
     
@@ -195,6 +208,7 @@ export function createRoom1() {
       (lamp)=>{
         lamp.castShadow = true;
         room.add(lamp);
+        collidableObjectsroom1.push(lamp);
 
         const wallLight = new THREE.SpotLight(0xffd27f, 2, 40, Math.PI / 2, 0.5, 1);
         wallLight.position.set(25, 8, 28);
@@ -215,7 +229,6 @@ loadModel('/models/ceiling_light.glb',
   {x:-6,y:-17.5,z:-30,scale:12,rotation:{y:-Math.PI/2}},
   (ceilingLight)=>{
     room.add(ceilingLight);
-
     // Create the actual light source
     const bulbLight = new THREE.PointLight(0xfff2cc, 50, 50); 
     bulbLight.position.set(0, 10, 10);

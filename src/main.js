@@ -16,10 +16,13 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createPlayer } from './objects/player.js';
 import { createGame } from './game.js';
 import { createLevel1 } from './scenes/level1/index.js';
+import { collidableObjectsroom1} from './scenes/level1/room1.js';
+import { collidableObjectsroom2} from './scenes/level1/room2.js'; 
 import { createLevel2 } from './scenes/level2/index.js';
 import { createLevel3 } from './scenes/level3/index.js';
 import { createLevel4 } from './scenes/level4/index.js';
 
+const collidableObjects = collidableObjectsroom1;
 // --- Scene, camera, renderer setup ---
 const scene = new THREE.Scene();
 
@@ -52,7 +55,7 @@ pointerControls.addEventListener('lock', () => console.log('Pointer locked'));
 pointerControls.addEventListener('unlock', () => console.log('Pointer unlocked'));
 
 // --- Add lights ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 scene.add(ambientLight);
 // bottom = -50;
 // scene.add(directionalLight);
@@ -131,7 +134,7 @@ new GLTFLoader().load('/models/player.glb', gltf => {
     const animationsMap = new Map();
     gltf.animations.forEach(clip => animationsMap.set(clip.name, mixer.clipAction(clip)));
 
-    characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'idle');
+    characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'idle',collidableObjects );
 });
 
 document.addEventListener('keydown', event => {
