@@ -80,7 +80,7 @@ export function createTexturedNote(
 // function to create walls
 function createWall(width, height, depth, x, y, z, paint, path) {
   const wallgeometry = new THREE.BoxGeometry(width, height, depth);
-  const wallmaterial = new THREE.MeshPhongMaterial({ map: path});
+  const wallmaterial = new THREE.MeshStandardMaterial({ map: path});
   const wall = new THREE.Mesh(wallgeometry, wallmaterial);
   wall.position.set(x, y, z);
   return wall;
@@ -89,7 +89,7 @@ function createWall(width, height, depth, x, y, z, paint, path) {
 // function to create a floor
 function createFloor(width, height, depth, x, y, z, paint, path){
   const floorgeometry = new THREE.BoxGeometry(width, height, depth);
-  const floormaterial = new THREE.MeshPhongMaterial({map: path});
+  const floormaterial = new THREE.MeshStandardMaterial({map: path});
   const floor = new THREE.Mesh(floorgeometry, floormaterial);
   floor.position.set(x, y, z);
   return floor;
@@ -125,9 +125,9 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
     const texture = loader.load(texturePath);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    material = new THREE.MeshPhongMaterial({ map: texture });
+    material = new THREE.MeshStandardMaterial({ map: texture });
   } else {
-    material = new THREE.MeshPhongMaterial({ color });
+    material = new THREE.MeshStandardMaterial({ color });
   }
 
   const geometry = new THREE.BoxGeometry(width, height, depth);

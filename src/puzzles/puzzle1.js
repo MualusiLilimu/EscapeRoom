@@ -86,7 +86,7 @@ export function updateKeyAnimation(puzzleModels, puzzle, delta) {
       
       // Rotate around X axis
       puzzle.keyRotation += delta * Math.PI; // Rotate 180 degrees per second
-      obj.rotation.x = puzzle.keyRotation;
+      obj.rotation.y = puzzle.keyRotation;
     }
   });
 }
