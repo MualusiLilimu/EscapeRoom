@@ -7,7 +7,7 @@ import { loadModel } from '../../../utils/loader.js';
 
 // everything you want to design for this ROOM you should do it inside createRoom function
 // you are also free to create functions outside the createRoom function and call them inside afterwards
-
+export const collidableObjectsroom2 = [];
 function createWall(width, height, depth, x, y, z, paint,path) {
   const wallgeometry = new THREE.BoxGeometry(width, height, depth);
   const wallmaterial = new THREE.MeshPhongMaterial({ map: path});
@@ -62,6 +62,7 @@ function createLampWithLight(x, y, z, scale = 20) {
     {x:-18,y:-16.5,z:3,scale:scale},
     (lamp)=>{
       group.add(lamp);
+      
     }
   );
 
@@ -99,66 +100,79 @@ export function createRoom2() {
 
     const wall1 = createWall(30,15,1,15,8,-30.5,"white",walltexture);
     room.add(wall1);
+    collidableObjectsroom2.push(wall1);
 
     const wall2 = createWall(30,15,1,-15,8,-30.5,"white",walltexture);
     room.add(wall2);
+    collidableObjectsroom2.push(wall2);
 
     const wall3 = createWall(1,15,30,-30,8,-15,"white",walltexture);
     room.add(wall3);
+    collidableObjectsroom2.push(wall3);
 
     const wall4 = createWall(1,15,24,-30,8,18,"white",walltexture);
     room.add(wall4);
+    collidableObjectsroom2.push(wall4);
 
     const wall5 = createWall(1,15,30,30,8,-15,"white",walltexture);
     room.add(wall5);
+    collidableObjectsroom2.push(wall5);
 
     const wall6 = createWall(1,15,30,30,8,15,"white",walltexture);
     room.add(wall6);
+    collidableObjectsroom2.push(wall6);
 
     const wall7 = createWall(31,15,1,15,8,30.5,"white",walltexture);
     room.add(wall7);
+    collidableObjectsroom2.push(wall7);
 
     const wall8 = createWall(23,15,1,-18,8,30.5,"white",walltexture);
     room.add(wall8);
+    collidableObjectsroom2.push(wall8);
 
     const wall9 = createWall(1,4,6,-30,13.5,3,"white",walltexture);
     room.add(wall9);
+    collidableObjectsroom2.push(wall9);
 
     const wall10 = createWall(6,4,1,-3.5,13.5,30.5,"white",walltexture);
     room.add(wall10);
+    collidableObjectsroom2.push(wall10);
 
     // beds
-    loadModel('/models/old_bed.glb',{x:20,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed); });
-    loadModel('/models/old_bed.glb',{x:10,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed); });
-    loadModel('/models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed); });
+    loadModel('/models/old_bed.glb',{x:20,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
+    loadModel('/models/old_bed.glb',{x:10,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
+    loadModel('/models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
 
     // window
-    loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window); });
+    loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window), collidableObjectsroom2.push(window); });
 
     // closet
-    loadModel('/models/box_wooden_closet_supplies.glb',{x:-28.5,y:0,z:-15,scale:5,rotation:{y:2*Math.PI}},(closet)=>{ room.add(closet); });
+    loadModel('/models/box_wooden_closet_supplies.glb',{x:-28.5,y:0,z:-15,scale:5,rotation:{y:2*Math.PI}},(closet)=>{ room.add(closet), collidableObjectsroom2.push(closet); });
 
     // desks
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:25,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk); });
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:18,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk); });
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:-7,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk); });
+    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:25,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
+    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:18,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
+    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:-7,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
 
     // doors
-    loadModel('/models/door.glb',{x:-30,y:11,z:3,scale:0.05,rotation:{y:Math.PI/2}},(door)=>{ room.add(door); });
-    loadModel('/models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door); });
+    loadModel('/models/door.glb',{x:-30,y:11,z:3,scale:0.05,rotation:{y:Math.PI/2}},(door)=>{ room.add(door), collidableObjectsroom2.push(door); });
+    loadModel('/models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door), collidableObjectsroom2.push(wooden_door); });
 
     // chest
-    loadModel('/models/treasure_chest.glb',{x:-27,y:0.5,z:-25,scale:0.06},(chest)=>{ room.add(chest); });
+    loadModel('/models/treasure_chest.glb',{x:-27,y:0.5,z:-25,scale:0.06},(chest)=>{ room.add(chest), collidableObjectsroom2.push(chest); });
 
     // === Lamps with light ===
     const lamp1 = createLampWithLight(0, 15.5, -2, 6);
     room.add(lamp1);
+    collidableObjectsroom2.push(lamp1);
 
     const lamp2 = createLampWithLight(0, 15.5, -20, 6);
     room.add(lamp2);
+    collidableObjectsroom2.push(lamp2);
 
     const lamp3 = createLampWithLight(0, 15.5, 20, 6);
     room.add(lamp3);
-    
+    collidableObjectsroom2.push(lamp3);
+
     return room;
 }

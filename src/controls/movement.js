@@ -22,7 +22,7 @@ export class CharacterControls {
     pitch = 0;
     mouseSensitivity = 0.002;
 
-    constructor(model, mixer, animationsMap, orbitControl, camera, currentAction) {
+    constructor(model, mixer, animationsMap, orbitControl, camera, currentAction, collidableObjects) {
         this.model = model;
         this.mixer = mixer;
         this.animationsMap = animationsMap;
@@ -31,6 +31,7 @@ export class CharacterControls {
 
         this.currentAction = null;
         this.toggleRun = true;
+        this.collidableObjects = collidableObjects;
         this.playAction(currentAction);
 
         this.addMouseControls();
@@ -106,9 +107,56 @@ export class CharacterControls {
             const velocity = this.toggleRun ? this.walkSpeed : this.walkSpeed / 2;
             const moveX = this.walkDirection.x * velocity * delta;
             const moveZ = this.walkDirection.z * velocity * delta;
-            this.model.position.x += moveX;
-            this.model.position.z += moveZ;
-        }
+            // this.model.position.x += moveX;
+            // this.model.position.z += moveZ;
+            const nextPosition = this.model.position.clone();
+            nextPosition.x += moveX;
+            nextPosition.z += moveZ;
+
+            // Simple bounding box around player
+            const playerBox = new THREE.Box3().setFromCenterAndSize(
+                nextPosition.clone().add(new THREE.Vector3(0, 3, 0)), // height offset
+                new THREE.Vector3(2, 6, 2)
+            );
+
+            let collision = false;
+
+           
+            for (const obj of this.collidableObjects) {
+                // Skip if object has no geometry or is far away
+                if (!obj.geometry && !obj.children.length) continue;
+                if (obj.position.distanceTo(this.model.position) > 30) continue;
+
+                // Cache the bounding box once
+                if (!obj.userData.box) {
+                    obj.userData.box = new THREE.Box3().setFromObject(obj);
+                }
+
+                // Recompute only if object moves
+                else if (obj.userData.lastPos) {
+                    const pos = obj.position.clone();
+                    if (!pos.equals(obj.userData.lastPos)) {
+                        obj.userData.box.setFromObject(obj);
+                        obj.userData.lastPos.copy(pos);
+                    }
+                } else {
+                    obj.userData.lastPos = obj.position.clone();
+                }
+
+                // Check intersection
+                if (playerBox.intersectsBox(obj.userData.box)) {
+                    collision = true;
+                    break;
+                }
+            }
+
+            // Only move if no collision
+            if (!collision) {
+                this.model.position.x = nextPosition.x;
+                this.model.position.z = nextPosition.z;
+            }
+        
+            }
 
         this.updateCameraTarget();
     }
