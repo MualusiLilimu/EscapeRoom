@@ -2,10 +2,80 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
+import { Scene } from 'three';
 
 // Fixed: Added 'const' declaration
 const puzz1Models = new THREE.Group();
 puzz1Models.name = "puzz1Models"; // Added name for easier debugging
+export function createTexturedNote(
+  scene,
+  texturePath,
+  position = { x: 0, y: 0, z: 0 },
+  rotation = { x: 0, y: 0, z: 0 }
+) {
+  loadModel(
+    '/public/models/post_it_notes.glb',
+    {
+      x: position.x,
+      y: position.y,
+      z: position.z,
+      scale: 5,
+      rotation: { x: rotation.x, y: rotation.y, z: rotation.z },
+    },
+    (notes) => {
+      notes.name = "customNote";
+      notes.userData.interactable = true;
+      scene.add(notes);
+
+      // Hide all other note meshes except the target
+      notes.traverse((child) => {
+        if (child.isMesh && child.name !== 'Object_8') {
+          child.visible = false;
+        }
+      });
+
+      // Load the overlay image (writing)
+      const textureLoader = new THREE.TextureLoader();
+      const targetNote = notes.getObjectByName('Object_8');
+
+      if (!targetNote) {
+        console.warn('Target note mesh not found!');
+        return;
+      }
+
+      // Create a combined texture (base + overlay)
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Fill canvas with base sticky note color
+      ctx.fillStyle = '#ffffaa';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Load PNG and draw it centered
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+
+        const combinedTexture = new THREE.CanvasTexture(canvas);
+        combinedTexture.needsUpdate = true;
+
+        // Apply texture to the note
+        targetNote.material = new THREE.MeshStandardMaterial({
+          map: combinedTexture,
+          side: THREE.DoubleSide,
+        });
+      };
+      img.src = texturePath;
+    }
+  );
+}
+
 
 // function to create walls
 function createWall(width, height, depth, x, y, z, paint, path) {
@@ -165,20 +235,156 @@ export function createRoom1() {
         room.add(cage);
       }
     );
+
+
+    const paintingtexture = loadTexture('/public/textures/painting-min.jpg');
+
+    const painting = createFloor(7, 4.6, 0.1, 3.5, 8, -13.8, "white", paintingtexture); 
+    const rgbtexture = loadTexture('/public/textures/rgb.png');
+
+    const rgb = createFloor(7, 4.6, 0.1, 3.5, 8, 28.9, "white", rgbtexture);
     
-    loadModel('/public/models/steamDeck.glb',
-      {x: -3, y: 4.2, z: 10, scale: 4, rotation: {z: Math.PI/4}},
-      (steamDeck) => {
-        steamDeck.name = "steamDeck";
-        steamDeck.userData.interactable = true;
-        steamDeck.userData.type = "steamDeck";
-        // Set name on all children too
-        steamDeck.traverse((child) => {
-          if (child !== steamDeck) {
-            child.userData.parentName = "steamDeck";
+    room.add(rgb)
+    room.add(painting)
+    const puzz1light1 = new THREE.PointLight(0xfff2cc, 10, 50); 
+        puzz1light1.position.set(-13, 10, 20);
+        puzz1light1.castShadow = false;
+        puzz1light1.shadow.bias = -0.003;
+        puzz1light1.name = "Light1";
+        puzz1light1.traverse((child) => {
+          if (child !== puzz1light1) {
+            child.userData.parentName = "Light1";
           }
         });
-        puzz1Models.add(steamDeck);
+
+    const puzz1light2 = new THREE.PointLight(0xfff2cc, 10, 50); 
+        puzz1light2.position.set(-13, 10, 23);
+        puzz1light2.castShadow = false;
+        puzz1light2.shadow.bias = -0.003;
+        puzz1light2.name = "Light2";
+        puzz1light2.traverse((child) => {
+          if (child !== puzz1light2) {
+            child.userData.parentName = "Light2";
+          }
+        });
+    
+    const puzz1light3 = new THREE.PointLight(0xfff2cc, 10, 50); 
+        puzz1light3.position.set(-13, 10, 26);
+        puzz1light3.castShadow = false;
+        puzz1light3.shadow.bias = -0.003;
+        puzz1light3.name = "Light3";
+        puzz1light3.traverse((child) => {
+          if (child !== puzz1light3) {
+            child.userData.parentName = "Light3";
+          }
+        });
+   puzz1Models.add(puzz1light1);
+   puzz1Models.add(puzz1light2);
+   puzz1Models.add(puzz1light3);
+   
+    loadModel('/public/models/puzzLight.glb',
+      {x: -14, y: 9, z: 20, scale: 0.03, rotation: {y: -Math.PI}},
+      (light) => {
+        light.name = "puzzLight1";
+        light.userData.interactable = true;
+        light.userData.type = "puzzLight1";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "puzzLight1";
+          }
+        });
+        puzz1Models.add(light);
+      }
+    );
+    loadModel('/public/models/key.glb',
+      {x: -10, y: 0, z: 23, scale: 0.003, rotation: {x: Math.PI/2}},
+      (loadkey) => {
+        loadkey.name = "key1";
+        loadkey.userData.interactable = true;
+        loadkey.userData.type = "key1";
+        // Set name on all children too
+        loadkey.traverse((child) => {
+          if (child !== loadkey) {
+            child.userData.parentName = "key1";
+          }
+        });
+        puzz1Models.add(loadkey);
+      }
+    );
+    loadModel('/public/models/puzzLight.glb',
+      {x: -14, y: 9, z: 23, scale: 0.03, rotation: {y: -Math.PI}},
+      (light) => {
+        light.name = "puzzLight2";
+        light.userData.interactable = true;
+        light.userData.type = "puzzLight2";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "puzzLight2";
+          }
+        });
+        puzz1Models.add(light);
+      }
+    );
+    loadModel('/public/models/puzzLight.glb',
+      {x: -14, y: 9, z: 26, scale: 0.03, rotation: {y: -Math.PI}},
+      (light) => {
+        light.name = "puzzLight3";
+        light.userData.interactable = true;
+        light.userData.type = "puzzLight3";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "puzzLight3";
+          }
+        });
+        puzz1Models.add(light);
+      }
+    );
+    loadModel('/public/models/button.glb',
+      {x: -14, y: 7, z: 20, scale: 0.3, rotation: {z: -Math.PI/2}},
+      (light) => {
+        light.name = "button1";
+        light.userData.interactable = true;
+        light.userData.type = "button1";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "button1";
+          }
+        });
+        puzz1Models.add(light);
+      }
+    );
+    loadModel('/public/models/button.glb',
+      {x: -14, y: 7, z: 23, scale: 0.3, rotation: {z: -Math.PI/2}},
+      (light) => {
+        light.name = "button2";
+        light.userData.interactable = true;
+        light.userData.type = "button2";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "button2";
+          }
+        });
+        puzz1Models.add(light);
+      }
+    );
+    loadModel('/public/models/button.glb',
+      {x: -14, y: 7, z: 26, scale: 0.3, rotation: {z: -Math.PI/2}},
+      (light) => {
+        light.name = "button3";
+        light.userData.interactable = true;
+        light.userData.type = "button3";
+        // Set name on all children too
+        light.traverse((child) => {
+          if (child !== light) {
+            child.userData.parentName = "button3";
+          }
+        });
+        puzz1Models.add(light);
       }
     );
     room.add(puzz1Models);
@@ -212,6 +418,15 @@ export function createRoom1() {
         room.add(couch);
       }
     );
+
+   
+// Load post-it notes model
+createTexturedNote(room, '/public/textures/love.png', { x: -2.5, y: 4.2, z: 8 },{ x: 0, y: Math.PI / 3, z: 0 });
+createTexturedNote(room, '/public/textures/two.png', { x: 3.5, y: 6.2, z: -13.5},{ x: Math.PI/2, y:Math.PI/2, z: 0 });
+createTexturedNote(room, '/public/textures/one.png', {x: -13.9, y: 5.8, z: 20},{ x: 0, y:Math.PI, z: Math.PI/2 });
+createTexturedNote(room, '/public/textures/two.png', {x: -13.9, y: 5.8, z: 23},{ x: 0, y:Math.PI, z: Math.PI/2 });
+
+
     
     //old table
     loadModel('/public/models/old_wooden_table.glb',
@@ -220,6 +435,20 @@ export function createRoom1() {
         table.name = "old_table";
         table.userData.interactable = true;
         room.add(table);
+      }
+    );
+
+    loadModel('/public/models/painting.glb',
+      {x: 3.5, y: 6.2, z: -15.7, scale: 1.1, rotation: {x:Math.PI/4}},
+      (table) => {
+        table.name = "painting";
+        table.userData.interactable = true;
+        room.add(table);
+        console.log(table)
+        table.traverse(child=>{
+          if(child.isMesh) console.log(child.name);
+        })
+        
       }
     );
     
@@ -282,9 +511,5 @@ export function createRoom1() {
       }
     );
     
-    return room;
-}
-
-export function getPuzz1Models() {
-  return puzz1Models;
+    return {room,puzz1Models};
 }

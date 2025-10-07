@@ -3,6 +3,7 @@
 import { TextureLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+
 export function loadTexture(path) {
   const loader = new TextureLoader();
   return loader.load(path);
