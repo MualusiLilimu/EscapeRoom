@@ -55,7 +55,7 @@ pointerControls.addEventListener('lock', () => console.log('Pointer locked'));
 pointerControls.addEventListener('unlock', () => console.log('Pointer unlocked'));
 
 // --- Add lights ---
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambientLight);
 // bottom = -50;
 // scene.add(directionalLight);
