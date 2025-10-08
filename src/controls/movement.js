@@ -38,22 +38,15 @@ export class CharacterControls {
     }
 
     addMouseControls() {
-        window.addEventListener('mousedown', (e) => {
-            if (e.button === 2) this.isFreeLook = true; // right mouse button
-        });
-
-        window.addEventListener('mouseup', (e) => {
-            if (e.button === 2) this.isFreeLook = false;
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (this.isFreeLook && this.currentCameraMode === this.cameraModes.THIRD_PERSON) {
+        document.addEventListener('mousemove', (e) => {
+            if (document.pointerLockElement) { // pointer is locked
                 this.yaw -= e.movementX * this.mouseSensitivity;
-                this.pitch -= e.movementY * this.mouseSensitivity;
+                this.pitch += e.movementY * this.mouseSensitivity;
                 this.pitch = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, this.pitch));
             }
         });
     }
+
 
     playAction(name) {
         if (this.currentAction === name) return;
@@ -175,54 +168,69 @@ export class CharacterControls {
         return directionOffset;
     }
 
-    updateCameraTarget() {
-        const smoothSpeed = 0.1;
+updateCameraTarget(delta = 0.016) {
+    const smoothSpeed = 20; // higher = snappier camera follow
+    const behindDistance = 5;
+    const upDistance = 8;
 
-        if (this.currentCameraMode === this.cameraModes.THIRD_PERSON) {
-            const behindDistance = 5;
-            const upDistance = 8;
+    if (this.currentCameraMode === this.cameraModes.THIRD_PERSON) {
 
-            // calculate forward direction depending on freelook
-            let forward = new THREE.Vector3(0, 0, 1).applyQuaternion(this.model.quaternion).normalize();
+        // Build rotation from yaw & pitch
+        const rotation = new THREE.Quaternion()
+            .setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
 
-            if (this.isFreeLook) {
-                const rotation = new THREE.Quaternion()
-                    .setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
-                forward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation);
-            }
+        const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation).normalize();
 
-            const desiredPosition = new THREE.Vector3()
-                .copy(this.model.position)
-                .addScaledVector(forward, -behindDistance)
-                .add(new THREE.Vector3(0, upDistance, 0));
+        // Desired camera position
+        const desiredPosition = new THREE.Vector3()
+            .copy(this.model.position)
+            .addScaledVector(forward, -behindDistance)
+            .add(new THREE.Vector3(0, upDistance, 0));
 
-            this.camera.position.lerp(desiredPosition, smoothSpeed);
+        // SMOOTH camera movement using exponential damping
+        this.camera.position.lerp(desiredPosition, 1 - Math.exp(-smoothSpeed * delta));
 
-            const desiredTarget = new THREE.Vector3().copy(this.model.position);
-            desiredTarget.y += 5;
-            this.cameraTarget.lerp(desiredTarget, smoothSpeed);
+        // Target (what camera looks at)
+        const desiredTarget = new THREE.Vector3().copy(this.model.position);
+        desiredTarget.y += 5;
 
-            const desiredDir = new THREE.Vector3().subVectors(this.cameraTarget, this.camera.position).normalize();
-            const currentDir = new THREE.Vector3();
-            this.camera.getWorldDirection(currentDir);
-            currentDir.lerp(desiredDir, 0.1);
+        // SMOOTH lookAt movement too
+        this.cameraTarget.lerp(desiredTarget, 1 - Math.exp(-smoothSpeed * delta));
+        this.camera.lookAt(this.cameraTarget);
 
-            const newTarget = new THREE.Vector3().addVectors(this.camera.position, currentDir);
-            this.camera.lookAt(newTarget);
-            this.orbitControl.target.copy(newTarget);
-        }
+        // Update orbit control target
+        this.orbitControl.target.copy(this.cameraTarget);
 
-        else if (this.currentCameraMode === this.cameraModes.FIRST_PERSON) {
-            const headHeight = 7.5;
-            const cameraPosition = new THREE.Vector3().copy(this.model.position);
-            cameraPosition.y += headHeight;
-
-            const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(this.model.quaternion).normalize();
-            const cameraTarget = new THREE.Vector3().copy(cameraPosition).add(forward);
-
-            this.camera.position.lerp(cameraPosition, 0.05);
-            this.camera.lookAt(cameraTarget);
-            this.orbitControl.target.copy(cameraPosition);
+        // Auto realign player when walking
+        if (this.currentAction === 'walk') {
+            const targetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, this.yaw, 0));
+            this.model.quaternion.slerp(targetQuat, 0.1);
         }
     }
+
+    else if (this.currentCameraMode === this.cameraModes.FIRST_PERSON) {
+    const headHeight = 7.5;
+    const cameraPosition = new THREE.Vector3().copy(this.model.position);
+    cameraPosition.y += headHeight;
+
+    // Use yaw/pitch for free look
+    const rotation = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ')
+    );
+    const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation).normalize();
+
+    // Camera target based on free look
+    const target = new THREE.Vector3().copy(cameraPosition).add(forward);
+
+    // Smooth camera movement
+    const smoothSpeed = 8;
+    this.camera.position.lerp(cameraPosition, 1 - Math.exp(-smoothSpeed * delta));
+    this.camera.lookAt(target);
+
+    // OrbitControl target for debugging / scene tools
+    this.orbitControl.target.copy(target);
+}
+
+}
+
 }
