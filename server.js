@@ -13,7 +13,9 @@ app.use('/utils', express.static(path.join(__dirname, 'utils')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
+app.get('/room1',(req,res)=>{
+  res.sendFile(path.join(__dirname,'public','room1.html'));
+})
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

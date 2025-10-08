@@ -3,14 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <title>Escape Room Game</title>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      canvas { display: block; }
-    </style>
+      <link rel="stylesheet" href="index.css">
+
   </head>
   <body>
- 
-    <script type="importmap">
+    <img class="img-gradient" src="gradient.png" alt="gradient" />
+    <div class="layer-blur"></div>
+
+    <div class="container">
+  <header>
+      <h1 class="logo">YOU</h1>
+
+
+
+      <nav>
+          <a href="#">Home</a>
+          <a href="#">About</a>
+          <a href="#">Contact Us</a>
+          <a href="#">Improvements</a>
+
+      </nav>
+
+  <a class="room1" href="/room1" >ROOM_1</a>
+      <button class="room2">ROOM_2</button>
+
+  </header>
+        <main>
+        <div class="content">
+            <div class="tag-box">
+                <div class="tag">
+                    GOT Enough brain cells? &wedbar;
+                </div>
+
+            </div>
+            <h1>We got Something for YOU and...<br> Your Brain Too</h1>
+            <p class="description">You will indulge in several puzzles that will test your mental and physical abilities<br>
+            This is an Environment designed for YOU </p>
+        </div>
+        </main>
+        <spline-viewer class="robot" url="https://prod.spline.design/IGhNCQQwOgbIXJr7/scene.splinecode"></spline-viewer>
+    </div>
+
+
+
+    <!-- <script type="module" src="/src/main.js"></script> -->
+      <script type="importmap">
         {
             "imports": {
             "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -19,9 +56,8 @@
         }
   </script>
       
-    <script type="module" src="/src/main.js"></script>
 
-
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.76/build/spline-viewer.js"></script>
 
   </body>
 </html>
