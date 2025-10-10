@@ -213,23 +213,23 @@ updateCameraTarget(delta = 0.016) {
     const cameraPosition = new THREE.Vector3().copy(this.model.position);
     cameraPosition.y += headHeight;
 
+    // Directly set position to avoid vibration
+    this.camera.position.copy(cameraPosition);
+
     // Use yaw/pitch for free look
     const rotation = new THREE.Quaternion().setFromEuler(
         new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ')
     );
     const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(rotation).normalize();
 
-    // Camera target based on free look
+    // Look directly forward from head
     const target = new THREE.Vector3().copy(cameraPosition).add(forward);
-
-    // Smooth camera movement
-    const smoothSpeed = 8;
-    this.camera.position.lerp(cameraPosition, 1 - Math.exp(-smoothSpeed * delta));
     this.camera.lookAt(target);
 
-    // OrbitControl target for debugging / scene tools
+    // Update OrbitControl target for debugging
     this.orbitControl.target.copy(target);
 }
+
 
 }
 
