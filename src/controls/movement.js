@@ -230,7 +230,6 @@ updateCameraTarget(delta = 0.016) {
     this.orbitControl.target.copy(target);
 }
 
-
 }
 
 }
