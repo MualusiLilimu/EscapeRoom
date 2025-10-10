@@ -11,17 +11,21 @@ import { createRoom3 } from './room3.js';
 import { createRoom4 } from './room4.js';
 
 export function createLevel1() {
+  const { puzz1Models:puzz1Models,room: room1 } = createRoom1(); 
+  console.log(puzz1Models)
+
   const rooms = [
-    createRoom1(),
+    room1,
     createRoom2(),
     createRoom3(),
     createRoom4()
   
   ];
+  const puzzModels =[puzz1Models]
 
   return {
     rooms,
-    totalRooms: rooms.length
+    totalRooms: rooms.length,puzzModels
   };
 }
 

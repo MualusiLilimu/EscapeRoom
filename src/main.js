@@ -7,6 +7,7 @@
 
 
 import * as THREE from 'three';
+import { createCrosshair,createInfoDisplay } from './puzzles/UiElements.js';
 import { createControls } from './camera.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
@@ -35,6 +36,8 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 6, 10);
 camera.lookAt(0,5,0);
 
+const crosshair = createCrosshair();
+const infoDisplay = createInfoDisplay();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,6 +91,7 @@ game.addLevel(level4);
 const current_room = game.getCurrentRoom();
 const next_room = game.nextRoom();
 next_room.position.set(74.5, 0, 20);
+
 
 // Enable shadows on room objects
 current_room.traverse((child) => {

@@ -416,5 +416,5 @@ loadModel('/models/ceiling_light.glb',
 
   }
 );
-  return room;
+  return {room,puzz1Models};
 }
