@@ -4,6 +4,7 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
+import { createPuzzle1Integration } from '../../puzzles/puzzle1Integration.js';
 
 export const collidableObjectsroom1 = [];
 
@@ -417,4 +418,16 @@ loadModel('/models/ceiling_light.glb',
   }
 );
   return {room,puzz1Models};
+}
+
+// Export a function to setup puzzles for room1
+export function setupRoom1Puzzles(room, puzz1Models, puzzleManager, infoDisplay) {
+  // Create the puzzle integration
+  const puzzle1Integration = createPuzzle1Integration(puzz1Models, infoDisplay);
+  
+  // Register with puzzle manager
+  // Use a unique ID for this room (level1-room1)
+  puzzleManager.registerPuzzle('level1-room1', puzzle1Integration);
+  
+  console.log('Room 1 puzzles registered');
 }
