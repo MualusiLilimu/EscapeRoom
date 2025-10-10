@@ -5,8 +5,9 @@
 // Main game entry point
 // Sets up scene, camera, renderer, player, game, and levels
 
-
+import { PuzzleManager } from './puzzles/puzzleManager.js';
 import * as THREE from 'three';
+import { createCrosshair,createInfoDisplay } from './puzzles/UiElements.js';
 import { createControls } from './camera.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
@@ -35,12 +36,15 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(0, 6, 10);
 camera.lookAt(0,5,0);
 
+const crosshair = createCrosshair();
+const infoDisplay = createInfoDisplay();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;                 // enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
+const puzzleManager = new PuzzleManager(scene, camera, renderer);
 
 const controls = setupFirstPersonControls(camera, renderer.domElement);
 const orbitControls = new OrbitControls(camera, renderer.domElement);
@@ -74,11 +78,17 @@ const player = createPlayer(camera);
 // --- Initialize game ---
 const game = createGame(scene, player);
 
+
 // --- Add levels ---
 const level1 = createLevel1();
 const level2 = createLevel2();
 const level3 = createLevel3();
 const level4 = createLevel4();
+
+level1.setupPuzzles(puzzleManager, infoDisplay);
+level2.setupPuzzles && level2.setupPuzzles(puzzleManager, infoDisplay);
+level3.setupPuzzles && level3.setupPuzzles(puzzleManager, infoDisplay);
+level4.setupPuzzles && level4.setupPuzzles(puzzleManager, infoDisplay);
 
 game.addLevel(level1);
 game.addLevel(level2);
@@ -88,6 +98,7 @@ game.addLevel(level4);
 const current_room = game.getCurrentRoom();
 const next_room = game.nextRoom();
 next_room.position.set(74.5, 0, 20);
+
 
 // Enable shadows on room objects
 current_room.traverse((child) => {
@@ -111,7 +122,7 @@ scene.add(current_room);
 // I disabled combining rooms in one scene because it takes a lof o memory,so only the current room will be visible in the scene
 current_room.visible = true;
 next_room.visible = false;
-
+puzzleManager.activateRoom(current_room.userData.roomId);
 scene.add(next_room);
 let characterControls = null;
 const keysPressed = {};
@@ -158,9 +169,11 @@ window.addEventListener('resize', () => {
 
 // --- Animation loop ---
 function animate() {
+  
   requestAnimationFrame(animate);
   game.update();
   const delta = clock.getDelta();
+  puzzleManager.update(delta);
   if (characterControls) characterControls.update(delta, keysPressed);
     orbitControls.update();
   renderer.render(scene, camera);

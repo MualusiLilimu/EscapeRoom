@@ -5,23 +5,60 @@
 
 // This functions creates a floor4 of the buiding with 4 rooms
 
-import { createRoom1 } from './room1.js';
+// scenes/level1/index.js
+// Updated to support puzzle integration
+
+// scenes/level1/index.js
+// Updated to support puzzle integration
+
+import { createRoom1, setupRoom1Puzzles } from './room1.js';
 import { createRoom2 } from './room2.js';
 import { createRoom3 } from './room3.js';
 import { createRoom4 } from './room4.js';
 
 export function createLevel1() {
-  const rooms = [
-    createRoom1(),
-    createRoom2(),
-    createRoom3(),
-    createRoom4()
+  // Create room 1 (returns {room, puzz1Models})
+  const room1Data = createRoom1();
+  const room1 = room1Data.room;
+  const puzz1Models = room1Data.puzz1Models;
   
-  ];
+  // Set room metadata
+  room1.userData.roomId = 'level1-room1';
+  room1.userData.levelId = 'level1';
+  room1.userData.roomIndex = 0;
+  
+  // Create other rooms (these return room objects directly)
+  const room2 = createRoom2();
+  if (room2) {
+    room2.userData.roomId = 'level1-room2';
+    room2.userData.levelId = 'level1';
+    room2.userData.roomIndex = 1;
+  }
+  
+  const room3 = createRoom3();
+  if (room3) {
+    room3.userData.roomId = 'level1-room3';
+    room3.userData.levelId = 'level3';
+    room3.userData.roomIndex = 2;
+  }
+  
+  const room4 = createRoom4();
+  if (room4) {
+    room4.userData.roomId = 'level1-room4';
+    room4.userData.levelId = 'level1';
+    room4.userData.roomIndex = 3;
+  }
+  
+  const rooms = [room1, room2, room3, room4].filter(Boolean); // Filter out undefined rooms
 
   return {
     rooms,
-    totalRooms: rooms.length
+    totalRooms: rooms.length,
+    setupPuzzles: (puzzleManager, infoDisplay) => {
+      // Setup puzzles for each room that has them
+      setupRoom1Puzzles(room1, puzz1Models, puzzleManager, infoDisplay);
+      // Add more puzzle setups for other rooms as needed
+      // setupRoom2Puzzles(room2, models2, puzzleManager, infoDisplay);
+    }
   };
 }
-
