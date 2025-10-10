@@ -21,15 +21,17 @@ function startCountdown(durationMinutes = 5) {
     let totalSeconds = durationMinutes * 60;
 
     function updateCountdown() {
+
+        if (!window.isPaused) {
+            totalSeconds--;
+        }
         const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
         const seconds = String(totalSeconds % 60).padStart(2, '0');
         document.getElementById('time-ui').textContent = `${minutes}:${seconds}`;
 
         if (totalSeconds <= 0) {
             clearInterval(timerInterval);
-        } else {
-            totalSeconds--;
-        }
+        } 
     }
 
     updateCountdown();
@@ -38,3 +40,33 @@ function startCountdown(durationMinutes = 5) {
 
 // Start the countdown
 startCountdown(5); // 5 minutes
+
+
+
+
+
+
+//pause and resume logic
+
+
+
+const pauseResumeBtn = document.getElementById("menu");
+const [pauseIcon, playIcon] = pauseResumeBtn.querySelectorAll("svg");
+const pausedOverlay = document.getElementById("paused-overlay");
+
+pauseIcon.style.display = "block";
+playIcon.style.display = "none";
+
+pauseResumeBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    window.isPaused = !window.isPaused;
+
+    pauseIcon.style.display = window.isPaused ? "none" : "block";
+    playIcon.style.display = window.isPaused ? "block" : "none";
+
+    
+    pausedOverlay.style.display = window.isPaused ? "block" : "none";
+
+    console.log(window.isPaused ? "Game paused" : "Game resumed");
+});
