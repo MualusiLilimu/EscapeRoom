@@ -9,6 +9,7 @@ import {
   hideKey 
 } from './puzzle1.js';
 import { showKeyCollected } from './UiElements.js';
+import { key } from '../UI/HUD.js';
 
 export function createPuzzle1Integration(puzz1Models, infoDisplay) {
   return {
@@ -40,6 +41,8 @@ export function createPuzzle1Integration(puzz1Models, infoDisplay) {
       const result = handlePuzzleButtonClick(objectName, puzzle1);
       
       if (result === 'key_collected') {
+        window.numOfKeys += 1;
+        key();
         showKeyCollected(infoDisplay);
         hideKey(puzz1Models);
         console.log('🎉 Puzzle 1 completed! Key collected!');

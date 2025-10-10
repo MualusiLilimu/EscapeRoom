@@ -78,6 +78,9 @@ const player = createPlayer(camera);
 // --- Initialize game ---
 const game = createGame(scene, player);
 
+// global key counter
+window.numOfKeys = 0;
+window.level_num = 0;
 
 // --- Add levels ---
 const level1 = createLevel1();

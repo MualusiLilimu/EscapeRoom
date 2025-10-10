@@ -1,0 +1,92 @@
+/* General layout */
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif; /* futuristic, readable */
+    background-color: black;
+    color: white;
+}
+
+/* Ensure canvas stays behind */
+canvas {
+    display: block;
+}
+
+/* Container for all HUD elements */
+.info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* UI doesn't block input unless we allow it */
+}
+
+/* --- Time UI: stays centered at top --- */
+#time-ui {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 25px;
+    border-radius: 8px;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* --- Right-side panel for most UI elements --- */
+.inventory,
+.pause_resume,
+.level {
+    position: absolute;
+    right: 25px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    pointer-events: none;
+}
+
+/* Inventory — near top right */
+.inventory {
+    top: 15px;
+    font-size: 18px;
+}
+
+/* Pause/Resume — below inventory */
+.pause_resume {
+    top: 60px;
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+    text-align: center;
+    line-height: 40px;
+    pointer-events: auto; /* clickable */
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+.pause_resume:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Level display — bottom right */
+.level {
+    bottom: 25px;
+    font-size: 18px;
+}
+
+/* Glowing pulse for the clock */
+@keyframes pulse {
+    0% { text-shadow: 0 0 6px rgba(0,255,255,0.8); }
+    50% { text-shadow: 0 0 12px rgba(0,255,255,1); }
+    100% { text-shadow: 0 0 6px rgba(0,255,255,0.8); }
+}
