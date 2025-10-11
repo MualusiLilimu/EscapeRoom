@@ -53,8 +53,15 @@ orbitControls.update();
 const pointerControls = new PointerLockControls(camera, renderer.domElement);
 scene.add(pointerControls.getObject());
 
+
+window.isPaused = false;
 // Click to lock the mouse
-document.addEventListener('click', () => pointerControls.lock());
+document.addEventListener('click', () => {
+    if (!window.isPaused) {
+        pointerControls.lock();
+    }
+});
+
 pointerControls.addEventListener('lock', () => console.log('Pointer locked'));
 pointerControls.addEventListener('unlock', () => console.log('Pointer unlocked'));
 
@@ -78,6 +85,9 @@ const player = createPlayer(camera);
 // --- Initialize game ---
 const game = createGame(scene, player);
 
+// global key counter
+window.numOfKeys = 0;
+window.level_num = 0;
 
 // --- Add levels ---
 const level1 = createLevel1();
@@ -149,6 +159,9 @@ new GLTFLoader().load('/models/player.glb', gltf => {
 });
 
 document.addEventListener('keydown', event => {
+    // Ignore key presses if the game is paused
+    if (window.isPaused) return;
+
     keysPressed[event.key.toLowerCase()] = true;
 
     if (event.key.toLowerCase() === 'v' && characterControls) {
@@ -157,8 +170,12 @@ document.addEventListener('keydown', event => {
 }, false);
 
 document.addEventListener('keyup', event => {
+    // Ignore key releases if the game is paused
+    if (window.isPaused) return;
+
     keysPressed[event.key.toLowerCase()] = false;
 }, false);
+
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -166,16 +183,24 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// In your main game file (before animate)
+
 
 // --- Animation loop ---
 function animate() {
-  
-  requestAnimationFrame(animate);
-  game.update();
-  const delta = clock.getDelta();
-  puzzleManager.update(delta);
-  if (characterControls) characterControls.update(delta, keysPressed);
-    orbitControls.update();
-  renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+
+    if (!window.isPaused) { // check the global pause flag
+        const delta = clock.getDelta();
+        game.update();
+        puzzleManager.update(delta);
+        if (characterControls) characterControls.update(delta, keysPressed);
+        orbitControls.update();
+    }
+
+    renderer.render(scene, camera);
 }
+
 animate();
+
+

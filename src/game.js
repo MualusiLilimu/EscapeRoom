@@ -5,6 +5,7 @@
 // Game manager handles current level, current room, player
 
 // Add these to game.js to support room switching with puzzles
+import { level } from "./UI/HUD.js";
 
 function createGame(scene, player, puzzleManager = null) {
   const levels = [];
@@ -15,9 +16,25 @@ function createGame(scene, player, puzzleManager = null) {
     levels.push(level);
   }
 
+
+  // This function displays the level of the current room and returns that room to be rendered in a scene
   function getCurrentRoom() {
+    if(levels[currentLevelIndex].rooms[currentRoomIndex].userData.levelId == "level1"){
+      window.level_num = 1;
+    }
+    else if(levels[currentLevelIndex].rooms[currentRoomIndex].userData.levelId == "level2"){
+      window.level_num = 2;
+    }
+    else if(levels[currentLevelIndex].rooms[currentRoomIndex].userData.levelId == "level3"){
+      window.level_num = 3;
+    }
+    else if(levels[currentLevelIndex].rooms[currentRoomIndex].userData.levelId == "level4"){
+      window.level_num = 4;
+    }
+    level();
     return levels[currentLevelIndex].rooms[currentRoomIndex];
   }
+
 
   function nextRoom() {
     // Deactivate current room's puzzle
