@@ -131,7 +131,8 @@ const clock = new THREE.Clock();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Door interaction logic 
-const interactionUI = document.getElementById('interaction-ui'); 
+const interactionUI = document.getElementById('interaction-ui');
+const no_key = document.getElementById('no_key');
 let nearDoor = false;
 let doorUnlocked = false;
 
@@ -151,14 +152,20 @@ function checkDoorInteraction() {
       }
     }
   }
-
-  interactionUI.style.display = nearDoor ? 'block' : 'none';
+  if(window.numOfKeys > 0){
+    interactionUI.style.display = nearDoor ? 'block' : 'none';
+  }
+  else{
+    no_key.style.display = nearDoor ? 'block' : 'none';
+  }
 }
 
 // When the player presses 'E' the door unlocks
 window.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 'e' && nearDoor && !doorUnlocked) {
-    unlockDoor();
+    if(window.numOfKeys > 0){
+      unlockDoor();
+    }
   }
 });
 
