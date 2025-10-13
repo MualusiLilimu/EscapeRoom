@@ -85,7 +85,7 @@ const player = createPlayer(camera);
 // --- Initialize game ---
 const game = createGame(scene, player);
 
-// global key counter
+// global key counter and level counter
 window.numOfKeys = 0;
 window.level_num = 0;
 
@@ -106,9 +106,6 @@ game.addLevel(level3);
 game.addLevel(level4);
 
 const current_room = game.getCurrentRoom();
-const next_room = game.nextRoom();
-next_room.position.set(74.5, 0, 20);
-
 
 // Enable shadows on room objects
 current_room.traverse((child) => {
@@ -118,25 +115,69 @@ current_room.traverse((child) => {
   }
 });
 
-next_room.traverse((child) => {
-  if (child.isMesh) {
-    child.castShadow = true;
-    child.receiveShadow = true;
-  }
-});
 
 // --- Add first room to scene ---
 scene.add(current_room);
 
-
-// I disabled combining rooms in one scene because it takes a lof o memory,so only the current room will be visible in the scene
 current_room.visible = true;
-next_room.visible = false;
+
 puzzleManager.activateRoom(current_room.userData.roomId);
-scene.add(next_room);
+
 let characterControls = null;
 const keysPressed = {};
 const clock = new THREE.Clock();
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Door interaction logic 
+const interactionUI = document.getElementById('interaction-ui'); 
+let nearDoor = false;
+let doorUnlocked = false;
+
+// Helper function to check if player is near the door
+function checkDoorInteraction() {
+  if (!characterControls || !collidableObjectsroom1) return;
+
+  const playerPos = characterControls.model.position;
+  nearDoor = false;
+
+  for (const obj of collidableObjectsroom1) {
+    if (obj.userData.isDoor) {
+      const distance = playerPos.distanceTo(obj.position);
+      if (distance < 10 && !doorUnlocked) { // within 10 units of the door
+        nearDoor = true;
+        break;
+      }
+    }
+  }
+
+  interactionUI.style.display = nearDoor ? 'block' : 'none';
+}
+
+// When the player presses 'E' the door unlocks
+window.addEventListener('keydown', (event) => {
+  if (event.key.toLowerCase() === 'e' && nearDoor && !doorUnlocked) {
+    unlockDoor();
+  }
+});
+
+function unlockDoor() {
+  const door = collidableObjectsroom1.find(obj => obj.userData.isDoor);
+  if (!door) return;
+
+  doorUnlocked = true;
+  door.visible = false;
+  const index = collidableObjectsroom1.indexOf(door);
+  if (index > -1) collidableObjectsroom1.splice(index, 1);
+
+  interactionUI.style.display = 'none';
+  console.log("Door unlocked!");
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// player model
 
 new GLTFLoader().load('/models/player.glb', gltf => {
     const model = gltf.scene;
@@ -147,8 +188,22 @@ new GLTFLoader().load('/models/player.glb', gltf => {
         }
     });
 
-    model.position.set(0, 0.5, 0);
-    model.scale.set(5, 5, 5);
+    // setting the initial postion of the player model in each room
+
+    if(current_room.userData.roomId == "level1-room1"){
+      model.position.set(0, 0.5, 0);
+      model.scale.set(5, 5, 5);
+    }
+    else if(current_room.userData.roomId == "level1-room2"){
+      model.position.set(-15,0.5,3);
+      model.scale.set(5,5,5);
+      model.rotation.y = Math.PI/2;
+    }
+    else if(current_room.userData.roomId == "level1-room3"){
+      model.position.set(0,0.5,10);
+      model.scale.set(4,4,4);
+      model.rotation.y = Math.PI;
+    }
     scene.add(model);
 
     const mixer = new THREE.AnimationMixer(model);
@@ -157,6 +212,9 @@ new GLTFLoader().load('/models/player.glb', gltf => {
 
     characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'idle',collidableObjects );
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 document.addEventListener('keydown', event => {
     // Ignore key presses if the game is paused
@@ -183,18 +241,17 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// In your main game file (before animate)
-
 
 // --- Animation loop ---
 function animate() {
     requestAnimationFrame(animate);
 
-    if (!window.isPaused) { // check the global pause flag
+    if (!window.isPaused) { 
         const delta = clock.getDelta();
         game.update();
         puzzleManager.update(delta);
         if (characterControls) characterControls.update(delta, keysPressed);
+        checkDoorInteraction();
         orbitControls.update();
     }
 

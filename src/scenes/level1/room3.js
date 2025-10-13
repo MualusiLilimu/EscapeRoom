@@ -240,7 +240,7 @@ export function createRoom3() {
 
     // Target the longest horizontal side (x or z) to be 40% of room size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.2;
+    const desiredMax = SIZE * 0.3;
     const uniformScale = desiredMax / maxHorizontal;
     couch.scale.multiplyScalar(uniformScale);
 
@@ -269,7 +269,7 @@ export function createRoom3() {
 
     // Keep TV relatively compact at the center
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.1;
+    const desiredMax = SIZE * 0.15;
     const uniformScale = desiredMax / maxHorizontal;
     tv.scale.multiplyScalar(uniformScale);
 
@@ -293,7 +293,7 @@ export function createRoom3() {
 
     // Scale body to reasonable size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.15;
+    const desiredMax = SIZE * 0.2;
     const uniformScale = desiredMax / maxHorizontal;
     body.scale.multiplyScalar(uniformScale);
 
@@ -341,7 +341,7 @@ export function createRoom3() {
 
     // Scale cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.2;
+    const desiredMax = SIZE * 0.3;
     const uniformScale = desiredMax / maxHorizontal;
     cabinet.scale.multiplyScalar(uniformScale);
 
@@ -357,7 +357,7 @@ export function createRoom3() {
   });
 
   // Human skull model: placed at room center
-  loadModel('/models/human_skull.glb', {}, (skull) => {
+  loadModel('./models/human_skull.glb', {}, (skull) => {
     const bbox = new THREE.Box3().setFromObject(skull);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -388,7 +388,7 @@ export function createRoom3() {
 
     // Scale display cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.15;
+    const desiredMax = SIZE * 0.25;
     const uniformScale = desiredMax / maxHorizontal;
     displayCabinet.scale.multiplyScalar(uniformScale);
 
@@ -412,7 +412,7 @@ export function createRoom3() {
 
     // Scale metal cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.12;
+    const desiredMax = SIZE * 0.22;
     const uniformScale = desiredMax / maxHorizontal;
     metalCabinet.scale.multiplyScalar(uniformScale);
 
@@ -500,7 +500,7 @@ export function createRoom3() {
 
   // Chest model: added using the same loadModel callback pattern as Room1
   loadModel('/models/chest.glb',
-    { x: -SIZE / 2 + 2, y: 0, z: -SIZE / 2 + 6, scale: 0.003, rotation: { y: Math.PI / 2 } },
+    { x: -SIZE / 2.3 + 2, y: 0, z: -SIZE / 2 + 6, scale: 0.005, rotation: { y: Math.PI / 2 } },
     (chest) => {
       chest.castShadow = true;
       chest.receiveShadow = true;

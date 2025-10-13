@@ -1,7 +1,4 @@
 *.glb filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
 *.jpg filter=lfs diff=lfs merge=lfs -text
-<<<<<<< HEAD
-=======
 *.webp filter=lfs diff=lfs merge=lfs -text
->>>>>>> 69cfbc92f5d4560609eb588a82b83067a4c08215
