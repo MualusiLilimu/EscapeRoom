@@ -3,7 +3,7 @@
 // -------------------------
 
 // Global game state
-window.isPaused = true;       // game starts paused until "Start" clicked
+window.isPaused = true; 
 window.numOfKeys = 0;
 window.level_num = 0;
 
@@ -40,8 +40,8 @@ function showCaughtScreen(duration = 3000) {
         caughtOverlay.style.opacity = "0";
         setTimeout(() => {
             caughtOverlay.style.display = "none";
-            caughtOverlay.style.opacity = "1"; // reset for next time
-            caughtOverlay.style.transition = ""; // reset transition
+            caughtOverlay.style.opacity = "1"; 
+            caughtOverlay.style.transition = ""; 
         }, 1000);
     }, duration);
 }
@@ -62,7 +62,7 @@ export function startCountdown(durationMinutes = 5) {
 
             // Show overlays
             timeUpOverlay.style.display = "flex";
-            showCaughtScreen(3000); // show caught screen for 3 seconds
+            showCaughtScreen(3000);
         }
     }
 
@@ -101,7 +101,7 @@ document.getElementById("restart").addEventListener("click", () => {
 
     startCountdown(5);
 
-    location.reload(); // optional: reloads scene
+    location.reload();
 });
 
 document.getElementById("quit").addEventListener("click", () => {
