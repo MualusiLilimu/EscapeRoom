@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room1</title>
+    <title>Escape Room</title>
     <link rel="stylesheet" href="./ui.css">
 </head>
 <body>
@@ -29,9 +29,38 @@
             <a id="quit" href="/menu">Quit</a>
         </section>
 
+        <!-- Add inside your <body> -->
+        <div id="fade-overlay" style="
+            position: fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background-color:black;
+            opacity:0;
+            pointer-events:none;
+            transition: opacity 1s ease;
+            z-index: 1000;
+        "></div>
+
     </section>
     <!-- Paused Overlay -->
     <section id="paused-overlay">PAUSED</section>
+    <!-- time out picture -->
+    <section id="caught_timeup"><img src="caught.png"></section>
+    <!-- Instruction Overlay -->
+    <section id="instruction-overlay">
+        <div id="instruction-content">
+            <h2>Welcome to the Game!</h2>
+            <p><strong>Objective:</strong> Find the key by solving the puzzle in the room before time runs out.</p>
+            <p><strong>Controls:</strong></p>
+            <ul>
+                <li><strong>Move:</strong> WASD</li>
+                <li><strong>Look Around:</strong> Mouse</li>
+                <li><strong>Switch View:</strong> V</li>
+            </ul>
+            <p><em>Tip: Switch to first-person view to solve puzzles more efficiently.</em></p>
+            <button id="start-game">Start</button>
+        </div>
+    </section>
 
     <script type="importmap">
         {

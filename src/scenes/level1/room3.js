@@ -2,6 +2,9 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 import { loadTexture } from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
 
+
+export const collidableObjectsroom3 = [];
+
 // function to create walls
 function createWall(width, height, depth, x, y, z, paint, path) {
   const wallgeometry = new THREE.BoxGeometry(width, height, depth);
@@ -90,9 +93,7 @@ export function createRoom3() {
   ceilingTexture.wrapS = THREE.RepeatWrapping; ceilingTexture.wrapT = THREE.RepeatWrapping; ceilingTexture.repeat.set(2, 2);
 
   // outside plane (moved below so no z-fight with floor)
-  const plane = createPlane(20000, 500, texturePaths.pave);
-  plane.position.y = -1.0;
-  room.add(plane);
+
 
   // ---- Room dimensions ----
   const SIZE = 40;
@@ -110,6 +111,7 @@ export function createRoom3() {
   // walls
   const wallBack = createWall(SIZE, HEIGHT, 1, 0, HEIGHT / 2, -SIZE / 2 + 0.5, "white", walltexture);
   room.add(wallBack);
+  collidableObjectsroom3.push(wallBack);
 
   // front wall segments + centered door 
   const doorWidth = 8;
@@ -128,6 +130,7 @@ export function createRoom3() {
     walltexture
   );
   room.add(frontLeft);
+  collidableObjectsroom3.push(frontLeft);
 
   const frontRight = createWall(
     frontSegWidth,
@@ -140,16 +143,20 @@ export function createRoom3() {
     walltexture
   );
   room.add(frontRight);
+  collidableObjectsroom3.push(frontRight);
 
   const wallLeft = createWall(1, HEIGHT, SIZE, -SIZE / 2 + 0.5, HEIGHT / 2, 0, "white", walltexture);
   room.add(wallLeft);
+  collidableObjectsroom3.push(wallLeft)
   const wallRight = createWall(1, HEIGHT, SIZE, SIZE / 2 - 0.5, HEIGHT / 2, 0, "white", walltexture);
   room.add(wallRight);
+  collidableObjectsroom3.push(wallRight);
 
   // Door
   const door = createDoor(doorWidth, doorHeight, 1, 0, doorHeight / 2, SIZE / 2 - 0.8, texturePaths.door);
   door.castShadow = true;
   room.add(door);
+  collidableObjectsroom3.push(door);
 
   // Header above the door 
   const headerHeight = HEIGHT - doorHeight;
@@ -165,6 +172,7 @@ export function createRoom3() {
       walltexture
     );
     room.add(header);
+    collidableObjectsroom3.push(header);
   }
 
   // skirting (position top flush with floor top)
@@ -187,16 +195,16 @@ export function createRoom3() {
   doorSpot.position.set(0, HEIGHT - 4, SIZE / 2 - 3);
   doorSpot.target.position.set(0, 3.5, SIZE / 2 - 1);
   doorSpot.castShadow = true;
-  doorSpot.shadow.mapSize.width = 1024;
-  doorSpot.shadow.mapSize.height = 1024;
+  doorSpot.shadow.mapSize.width = 512;
+  doorSpot.shadow.mapSize.height = 512;
   room.add(doorSpot);
   room.add(doorSpot.target);
 
   const dir = new THREE.DirectionalLight(0xffffff, 0.3);
   dir.position.set(-30, 40, 20);
   dir.castShadow = true;
-  dir.shadow.mapSize.width = 2048;
-  dir.shadow.mapSize.height = 2048;
+  dir.shadow.mapSize.width = 512;
+  dir.shadow.mapSize.height = 512;
   room.add(dir);
 
   // ----------------- MODELS -----------------
@@ -220,12 +228,12 @@ export function createRoom3() {
     const bulbLight = new THREE.PointLight(0xfff7e6, 8, 80);
     bulbLight.position.set(0, 0, 0); // Relative to lamp position
     bulbLight.castShadow = true;
-    bulbLight.shadow.mapSize.width = 2048;
-    bulbLight.shadow.mapSize.height = 2048;
+    bulbLight.shadow.mapSize.width = 512;
+    bulbLight.shadow.mapSize.height = 512;
     bulbLight.shadow.bias = -0.003;
     lamp.add(bulbLight);
 
-    lamp.castShadow = true;
+    lamp.castShadow = false;
     lamp.receiveShadow = true;
     room.add(lamp);
   });
@@ -258,6 +266,7 @@ export function createRoom3() {
     couch.castShadow = true;
     couch.receiveShadow = true;
     room.add(couch);
+    collidableObjectsroom3.push(couch);
   });
 
 
@@ -280,9 +289,10 @@ export function createRoom3() {
     tv.position.y -= bottomY;
     tv.rotation.y = Math.PI/2;
 
-    tv.castShadow = true;
+    tv.castShadow = false;
     tv.receiveShadow = true;
     room.add(tv);
+    collidableObjectsroom3.push(tv);
   });
 
   // Dead body model: placed at room center
@@ -306,6 +316,7 @@ export function createRoom3() {
     body.castShadow = true;
     body.receiveShadow = true;
     room.add(body);
+    collidableObjectsroom3.push(body);
   });
 
   // Chucky doll model: placed next to the couch
@@ -331,6 +342,7 @@ export function createRoom3() {
     doll.castShadow = true;
     doll.receiveShadow = true;
     room.add(doll);
+    collidableObjectsroom3.push(doll);
   });
 
   // Bloody cabinet model: placed at room center
@@ -341,7 +353,7 @@ export function createRoom3() {
 
     // Scale cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.3;
+    const desiredMax = SIZE * 0.27;
     const uniformScale = desiredMax / maxHorizontal;
     cabinet.scale.multiplyScalar(uniformScale);
 
@@ -354,6 +366,7 @@ export function createRoom3() {
     cabinet.castShadow = true;
     cabinet.receiveShadow = true;
     room.add(cabinet);
+    collidableObjectsroom3.push(cabinet);
   });
 
   // Human skull model: placed at room center
@@ -364,7 +377,7 @@ export function createRoom3() {
 
     // Scale skull to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.08;
+    const desiredMax = SIZE * 0.04;
     const uniformScale = desiredMax / maxHorizontal;
     skull.scale.multiplyScalar(uniformScale);
 
@@ -378,6 +391,7 @@ export function createRoom3() {
     skull.castShadow = true;
     skull.receiveShadow = true;
     room.add(skull);
+    collidableObjectsroom3.push(skull);
   });
 
   // Display cabinet model: placed at room center
@@ -388,7 +402,7 @@ export function createRoom3() {
 
     // Scale display cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.25;
+    const desiredMax = SIZE * 0.23;
     const uniformScale = desiredMax / maxHorizontal;
     displayCabinet.scale.multiplyScalar(uniformScale);
 
@@ -402,6 +416,7 @@ export function createRoom3() {
     displayCabinet.castShadow = true;
     displayCabinet.receiveShadow = true;
     room.add(displayCabinet);
+    collidableObjectsroom3.push(displayCabinet);
   });
 
   // Metal cabinet model: placed at room center
@@ -412,7 +427,7 @@ export function createRoom3() {
 
     // Scale metal cabinet to appropriate size
     const maxHorizontal = Math.max(size.x, size.z) || 1;
-    const desiredMax = SIZE * 0.22;
+    const desiredMax = SIZE * 0.18;
     const uniformScale = desiredMax / maxHorizontal;
     metalCabinet.scale.multiplyScalar(uniformScale);
 
@@ -426,6 +441,7 @@ export function createRoom3() {
     metalCabinet.castShadow = true;
     metalCabinet.receiveShadow = true;
     room.add(metalCabinet);
+    collidableObjectsroom3.push(metalCabinet);
   });
 
   // Torture table model: placed at room center
@@ -450,6 +466,7 @@ export function createRoom3() {
     tortureTable.castShadow = true;
     tortureTable.receiveShadow = true;
     room.add(tortureTable);
+    collidableObjectsroom3.push(tortureTable);
   });
 
   // Gore model: placed at room center
@@ -473,6 +490,7 @@ export function createRoom3() {
     gore.castShadow = true;
     gore.receiveShadow = true;
     room.add(gore);
+    collidableObjectsroom3.push(gore);
   });
 
   // Painting model: hung on wall above torture table
@@ -495,16 +513,18 @@ export function createRoom3() {
     painting.castShadow = true;
     painting.receiveShadow = true;
     room.add(painting);
+    collidableObjectsroom3.push(painting);
   });
 
 
   // Chest model: added using the same loadModel callback pattern as Room1
   loadModel('/models/chest.glb',
-    { x: -SIZE / 2.3 + 2, y: 0, z: -SIZE / 2 + 6, scale: 0.005, rotation: { y: Math.PI / 2 } },
+    { x: -SIZE / 2.1 + 2, y: 0, z: -SIZE / 2 + 6, scale: 0.005, rotation: { y: Math.PI / 2 } },
     (chest) => {
       chest.castShadow = true;
       chest.receiveShadow = true;
       room.add(chest);
+      collidableObjectsroom3.push(chest);
     }
   );
 

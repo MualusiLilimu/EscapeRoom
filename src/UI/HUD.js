@@ -1,26 +1,52 @@
-// The heads-up display, e.g., timer countdown, collected items
+// -------------------------
+// HUD.js
+// -------------------------
 
-// function that shows the current level the player is in
-export function level(){
-    const level_num = window.level_num;
-    console.log(level_num);
-    document.getElementById('levels').textContent = `${level_num}`;
+// Global game state
+window.isPaused = true;       // game starts paused until "Start" clicked
+window.numOfKeys = 0;
+window.level_num = 0;
+
+let timerInterval;
+let timerStarted = false;
+
+// -------------------------
+// Level & Keys UI
+// -------------------------
+export function level() {
+    document.getElementById('levels').textContent = `${window.level_num}`;
 }
 
-
-//function that track the number of keys collected and updates the UI
-export function key(){
-    const num_of_keys = window.numOfKeys;
-    document.getElementById('keys').textContent = `${num_of_keys}`;
+export function key() {
+    document.getElementById('keys').textContent = `${window.numOfKeys}`;
 }
 
-
-
-// Function that sets time to 5 minuets for a player to solve the puzzle
+// -------------------------
+// Countdown Timer
+// -------------------------
 const timeUpOverlay = document.getElementById("time_up");
 timeUpOverlay.style.display = "none"; // hide initially
 
-function startCountdown(durationMinutes = 5) {
+const caughtOverlay = document.getElementById("caught_timeup");
+caughtOverlay.style.display = "none"; // hide initially
+
+function showCaughtScreen(duration = 3000) {
+    caughtOverlay.style.display = "flex";
+    caughtOverlay.style.opacity = "1";
+
+    setTimeout(() => {
+        // Fade out smoothly
+        caughtOverlay.style.transition = "opacity 1s ease";
+        caughtOverlay.style.opacity = "0";
+        setTimeout(() => {
+            caughtOverlay.style.display = "none";
+            caughtOverlay.style.opacity = "1"; // reset for next time
+            caughtOverlay.style.transition = ""; // reset transition
+        }, 1000);
+    }, duration);
+}
+
+export function startCountdown(durationMinutes = 5) {
     let totalSeconds = durationMinutes * 60;
 
     function updateCountdown() {
@@ -32,56 +58,60 @@ function startCountdown(durationMinutes = 5) {
 
         if (totalSeconds <= 0) {
             clearInterval(timerInterval);
-            timeUpOverlay.style.display = "flex"; 
             window.isPaused = true;
+
+            // Show overlays
+            timeUpOverlay.style.display = "flex";
+            showCaughtScreen(3000); // show caught screen for 3 seconds
         }
     }
 
     updateCountdown();
-    const timerInterval = setInterval(updateCountdown, 1000);
+    timerInterval = setInterval(updateCountdown, 1000);
 }
 
+export function resetCountdown(durationMinutes = 5) {
+    if (timerInterval) clearInterval(timerInterval);
 
-// Start the countdown
-startCountdown(5); // 5 minutes
+    const totalSeconds = durationMinutes * 60;
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
 
+    document.getElementById('time-ui').textContent = `${minutes}:${seconds}`;
+    timeUpOverlay.style.display = "none";
+    caughtOverlay.style.display = "none";
+    window.isPaused = false;
 
-// restart and quit logic
+    startCountdown(durationMinutes);
+}
 
-const restartBtn = document.getElementById("restart");
-const quitBtn = document.getElementById("quit");
+// -------------------------
+// Restart & Quit Logic
+// -------------------------
+document.getElementById("restart").addEventListener("click", () => {
+    timeUpOverlay.style.display = "none";
+    caughtOverlay.style.display = "none";
 
-restartBtn.addEventListener("click", () => {
-    
-    document.getElementById("time_up").style.display = "none";
-
-    // Reset game state
     window.isPaused = false;
     window.numOfKeys = 0;
     window.level_num = 0;
 
-    // Reset keys and level
     key();
     level();
 
-    // Reset the countdown (5 minutes again)
     startCountdown(5);
 
-    // reset player position & reload the scene
-    location.reload(); 
+    location.reload(); // optional: reloads scene
 });
 
-quitBtn.addEventListener("click", () => {
-    // Quit logic
+document.getElementById("quit").addEventListener("click", () => {
     window.isPaused = true;
-    alert("Quit to main menu"); 
+    alert("Quit to main menu");
 });
 
-
-
-
-//pause and resume logic
-
+// -------------------------
+// Pause & Resume Logic
+// -------------------------
 const pauseResumeBtn = document.getElementById("menu");
 const [pauseIcon, playIcon] = pauseResumeBtn.querySelectorAll("svg");
 const pausedOverlay = document.getElementById("paused-overlay");
@@ -97,8 +127,22 @@ pauseResumeBtn.addEventListener("click", (event) => {
     pauseIcon.style.display = window.isPaused ? "none" : "block";
     playIcon.style.display = window.isPaused ? "block" : "none";
 
-    
     pausedOverlay.style.display = window.isPaused ? "block" : "none";
-
     console.log(window.isPaused ? "Game paused" : "Game resumed");
+});
+
+// -------------------------
+// Start Game Logic (Instructions Overlay)
+// -------------------------
+const instructionOverlay = document.getElementById('instruction-overlay');
+const startButton = document.getElementById('start-game');
+
+startButton.addEventListener('click', () => {
+    instructionOverlay.style.display = 'none';
+    window.isPaused = false;
+
+    if (!timerStarted) {
+        startCountdown(5); // 5 minutes
+        timerStarted = true;
+    }
 });

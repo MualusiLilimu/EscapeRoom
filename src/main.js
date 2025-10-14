@@ -19,6 +19,7 @@ import { createGame } from './game.js';
 import { createLevel1 } from './scenes/level1/index.js';
 import { collidableObjectsroom1} from './scenes/level1/room1.js';
 import { collidableObjectsroom2} from './scenes/level1/room2.js'; 
+import { collidableObjectsroom3} from './scenes/level1/room3.js';
 import { createLevel2 } from './scenes/level2/index.js';
 import { createLevel3 } from './scenes/level3/index.js';
 import { createLevel4 } from './scenes/level4/index.js';
@@ -105,7 +106,7 @@ game.addLevel(level2);
 game.addLevel(level3);
 game.addLevel(level4);
 
-const current_room = game.getCurrentRoom();
+let current_room = game.getCurrentRoom();
 
 // Enable shadows on room objects
 current_room.traverse((child) => {
@@ -138,27 +139,32 @@ let doorUnlocked = false;
 
 // Helper function to check if player is near the door
 function checkDoorInteraction() {
-  if (!characterControls || !collidableObjectsroom1) return;
+    if (!characterControls || !collidableObjects) return;
 
-  const playerPos = characterControls.model.position;
-  nearDoor = false;
+    const playerPos = characterControls.model.position;
+    nearDoor = false;
 
-  for (const obj of collidableObjectsroom1) {
-    if (obj.userData.isDoor) {
-      const distance = playerPos.distanceTo(obj.position);
-      if (distance < 10 && !doorUnlocked) { // within 10 units of the door
-        nearDoor = true;
-        break;
-      }
+    // Loop over the collidable objects of the current room
+    for (const obj of collidableObjects) {
+        if (obj.userData.isDoor) {
+            const distance = playerPos.distanceTo(obj.position);
+            if (distance < 10 && !doorUnlocked) { // within 10 units
+                nearDoor = true;
+                break;
+            }
+        }
     }
-  }
-  if(window.numOfKeys > 0){
-    interactionUI.style.display = nearDoor ? 'block' : 'none';
-  }
-  else{
-    no_key.style.display = nearDoor ? 'block' : 'none';
-  }
+
+    // Show proper UI based on keys
+    if (window.numOfKeys > 0) {
+        interactionUI.style.display = nearDoor ? 'block' : 'none';
+        no_key.style.display = 'none';
+    } else {
+        no_key.style.display = nearDoor ? 'block' : 'none';
+        interactionUI.style.display = 'none';
+    }
 }
+
 
 // When the player presses 'E' the door unlocks
 window.addEventListener('keydown', (event) => {
@@ -169,18 +175,89 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+
 function unlockDoor() {
-  const door = collidableObjectsroom1.find(obj => obj.userData.isDoor);
-  if (!door) return;
+    const door = collidableObjects.find(obj => obj.userData.isDoor);
+    if (!door) return;
 
-  doorUnlocked = true;
-  door.visible = false;
-  const index = collidableObjectsroom1.indexOf(door);
-  if (index > -1) collidableObjectsroom1.splice(index, 1);
+    doorUnlocked = true;
 
-  interactionUI.style.display = 'none';
-  console.log("Door unlocked!");
+    // Animate door rotation
+    const doorOpenRotation = { y: door.rotation.y - Math.PI/2 }; // rotate 90 degrees
+    const duration = 1; // seconds
+    const startTime = performance.now();
+
+    function animateDoor(time) {
+        const elapsed = (time - startTime) / 1000;
+        const t = Math.min(elapsed / duration, 1);
+        door.rotation.y = THREE.MathUtils.lerp(door.rotation.y, doorOpenRotation.y, t);
+        if (t < 1) requestAnimationFrame(animateDoor);
+        else fadeOutRoom();
+    }
+    requestAnimationFrame(animateDoor);
 }
+
+
+function fadeOutRoom() {
+    const fadeOverlay = document.getElementById('fade-overlay');
+    fadeOverlay.style.transition = 'opacity 1s ease';
+    fadeOverlay.style.opacity = 1;
+
+    // Wait for fade to finish, then switch room
+    setTimeout(() => {
+        switchRoom();
+        fadeOverlay.style.opacity = 0;
+    }, 1000);
+}
+
+
+// This  function changes the room after a player unlocks the door
+function switchRoom() {
+    // Remove current room
+    if (current_room) scene.remove(current_room);
+
+    // Get the next room
+    const nextRoom = game.nextRoom();
+    scene.add(nextRoom);
+
+    // Enable shadows
+    nextRoom.traverse(child => {
+        if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+        }
+    });
+
+    // Update collidable objects
+    collidableObjects.length = 0;
+    if (nextRoom.userData.roomId === "level1-room2") {
+        collidableObjects.push(...collidableObjectsroom2);
+    } else if (nextRoom.userData.roomId === "level1-room3") {
+        collidableObjects.push(...collidableObjectsroom3);
+    }
+
+    // Update player position
+    if (characterControls) {
+        characterControls.collidableObjects = collidableObjects;
+        if (nextRoom.userData.roomId === "level1-room2") {
+            characterControls.model.position.set(-15, 0.5, 3);
+            characterControls.model.rotation.y = Math.PI/2;
+        } else if (nextRoom.userData.roomId === "level1-room3") {
+            characterControls.model.position.set(0, 0.5, 10);
+            characterControls.model.scale.set(4,4,4);
+            characterControls.model.rotation.y = Math.PI;
+        }
+    }
+
+    // Update current_room reference
+    current_room = nextRoom;
+
+    // Reset door state
+    doorUnlocked = false;
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -196,21 +273,9 @@ new GLTFLoader().load('/models/player.glb', gltf => {
     });
 
     // setting the initial postion of the player model in each room
+    model.position.set(0, 0.5, 0);
+    model.scale.set(5, 5, 5);
 
-    if(current_room.userData.roomId == "level1-room1"){
-      model.position.set(0, 0.5, 0);
-      model.scale.set(5, 5, 5);
-    }
-    else if(current_room.userData.roomId == "level1-room2"){
-      model.position.set(-15,0.5,3);
-      model.scale.set(5,5,5);
-      model.rotation.y = Math.PI/2;
-    }
-    else if(current_room.userData.roomId == "level1-room3"){
-      model.position.set(0,0.5,10);
-      model.scale.set(4,4,4);
-      model.rotation.y = Math.PI;
-    }
     scene.add(model);
 
     const mixer = new THREE.AnimationMixer(model);
