@@ -249,7 +249,29 @@ export function createRoom1() {
     wall6.receiveShadow = true;
     room.add(wall6);
     collidableObjectsroom1.push(wall6);
+
+    const wall7 = createWall(1,15,4,44.5,8,18,"white",walltexture);
+    wall7.receiveShadow = true;
+    room.add(wall7);
+    collidableObjectsroom1.push(wall7);
+
+    const wall8 = createWall(1,15,4,44.5,8,27,"white",walltexture);
+    wall8.receiveShadow = true;
+    room.add(wall8);
+    collidableObjectsroom1.push(wall8);
+
+    const wall9 = createWall(1,5,5,44.5,13,22.5,"white",walltexture);
+    wall9.receiveShadow = true;
+    room.add(wall9);
+    collidableObjectsroom1.push(wall9);
+
     //door
+    const doorTexture = '/textures/black_door1.png'; // replace with your door texture
+    const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture);
+    door.name = "exitDoor";
+    door.userData.isDoor = true;
+    room.add(door);
+    collidableObjectsroom1.push(door);
 
     //////////// Furnitures //////////////////////
 
@@ -417,6 +439,7 @@ loadModel('/models/ceiling_light.glb',
 
   }
 );
+
   return {room,puzz1Models};
 }
 

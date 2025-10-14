@@ -69,9 +69,9 @@ function createLampWithLight(x, y, z, scale = 20) {
   // point light to emit illumination
   const lampLight = new THREE.PointLight(0xfff2cc, 50, 50); 
   lampLight.position.set(0, -0.5, 0); 
-  lampLight.castShadow = true;
-  lampLight.shadow.mapSize.width = 1024;
-  lampLight.shadow.mapSize.height = 1024;
+  lampLight.castShadow = false;
+  lampLight.shadow.mapSize.width = 512;
+  lampLight.shadow.mapSize.height = 512;
   group.add(lampLight);
 
   group.position.set(x, y, z);
@@ -144,7 +144,7 @@ export function createRoom2() {
     loadModel('/models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
 
     // window
-    loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window), collidableObjectsroom2.push(window); });
+    // loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window); });
 
     // closet
     loadModel('/models/box_wooden_closet_supplies.glb',{x:-28.5,y:0,z:-15,scale:5,rotation:{y:2*Math.PI}},(closet)=>{ room.add(closet), collidableObjectsroom2.push(closet); });
@@ -156,7 +156,7 @@ export function createRoom2() {
 
     // doors
     loadModel('/models/door.glb',{x:-30,y:11,z:3,scale:0.05,rotation:{y:Math.PI/2}},(door)=>{ room.add(door), collidableObjectsroom2.push(door); });
-    loadModel('/models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door), collidableObjectsroom2.push(wooden_door); });
+    loadModel('/models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door),wooden_door.name = "exitDoor",wooden_door.userData.isDoor = true, collidableObjectsroom2.push(wooden_door); });
 
     // chest
     loadModel('/models/treasure_chest.glb',{x:-27,y:0.5,z:-25,scale:0.06},(chest)=>{ room.add(chest), collidableObjectsroom2.push(chest); });
@@ -174,5 +174,6 @@ export function createRoom2() {
     room.add(lamp3);
     collidableObjectsroom2.push(lamp3);
 
+    
     return room;
 }
