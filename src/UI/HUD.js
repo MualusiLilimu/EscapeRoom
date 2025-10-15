@@ -60,9 +60,18 @@ export function startCountdown(durationMinutes = 5) {
             clearInterval(timerInterval);
             window.isPaused = true;
 
-            // Show overlays
-            timeUpOverlay.style.display = "flex";
-            showCaughtScreen(3000);
+            // Notify listeners that time is up
+            try {
+                window.dispatchEvent(new CustomEvent('game:timeup'));
+            } catch (_) {}
+
+            // Allow external logic (e.g., explosion) to defer UI
+            const shouldDefer = typeof window.shouldDeferTimeUpUI === 'function' && window.shouldDeferTimeUpUI();
+            if (!shouldDefer) {
+                // Default behavior: show overlays immediately
+                timeUpOverlay.style.display = "flex";
+                renderDeathCardIfExploded();
+            }
         }
     }
 
@@ -83,6 +92,58 @@ export function resetCountdown(durationMinutes = 5) {
     window.isPaused = false;
 
     startCountdown(durationMinutes);
+}
+
+// Expose a helper to show the time-up UI on demand (used when deferring)
+window.showTimeUpUI = function() {
+    try {
+        timeUpOverlay.style.display = "flex";
+        renderDeathCardIfExploded();
+    } catch (_) {}
+};
+
+function renderDeathCardIfExploded() {
+    try {
+        const wrapper = document.getElementById('time_up');
+        if (!wrapper) return;
+        if (!window.wasExploded) return;
+        // Clear and build custom content
+        wrapper.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = '/textures/scream.png';
+        img.alt = 'Scream';
+        img.className = 'death-image';
+        const title = document.createElement('div');
+        title.className = 'death-title';
+        title.textContent = 'YOU DIED';
+        const restart = document.createElement('button');
+        restart.id = 'restart';
+        restart.textContent = 'Restart';
+        const quit = document.createElement('a');
+        quit.id = 'quit';
+        quit.href = '/menu';
+        quit.textContent = 'Quit';
+        wrapper.appendChild(img);
+        wrapper.appendChild(title);
+        wrapper.appendChild(restart);
+        wrapper.appendChild(quit);
+        // Reattach listeners
+        restart.addEventListener('click', () => {
+            wrapper.style.display = 'none';
+            window.isPaused = false;
+            window.numOfKeys = 0;
+            window.level_num = 0;
+            key();
+            level();
+            startCountdown(5);
+            location.reload();
+        });
+        quit.addEventListener('click', () => {
+            window.isPaused = true;
+        });
+        // Reset flag after rendering once
+        window.wasExploded = false;
+    } catch (_) {}
 }
 
 // -------------------------
