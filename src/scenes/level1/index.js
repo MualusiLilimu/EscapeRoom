@@ -12,7 +12,7 @@
 // Updated to support puzzle integration
 
 import { createRoom1, setupRoom1Puzzles } from './room1.js';
-import { createRoom2 } from './room2.js';
+import { createRoom2 ,setupRoom2Puzzles} from './room2.js';
 import { createRoom3 } from './room3.js';
 import { createRoom4 } from './room4.js';
 
@@ -28,7 +28,9 @@ export function createLevel1() {
   room1.userData.roomIndex = 0;
   
   // Create other rooms (these return room objects directly)
-  const room2 = createRoom2();
+  const room2Data = createRoom2();
+  const room2 = room2Data.room;
+  const puzz2Models = room2Data.puzz2Models;
   if (room2) {
     room2.userData.roomId = 'level1-room2';
     room2.userData.levelId = 'level1';
@@ -58,7 +60,7 @@ export function createLevel1() {
       // Setup puzzles for each room that has them
       setupRoom1Puzzles(room1, puzz1Models, puzzleManager, infoDisplay);
       // Add more puzzle setups for other rooms as needed
-      // setupRoom2Puzzles(room2, models2, puzzleManager, infoDisplay);
+      setupRoom2Puzzles(room2, puzz2Models, puzzleManager, infoDisplay);
     }
   };
 }
