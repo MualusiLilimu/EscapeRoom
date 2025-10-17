@@ -266,6 +266,9 @@ function switchRoom() {
     // Update current_room reference
     current_room = nextRoom;
 
+    // Activate puzzle for the new room
+    puzzleManager.activateRoom(nextRoom.userData.roomId);
+
     // Reset door state
     doorUnlocked = false;
 }

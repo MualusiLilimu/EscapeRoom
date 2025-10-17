@@ -4,10 +4,13 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import {loadTexture} from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
+import { createPuzzle2Integration } from '../../puzzles/puzzle2Integration.js';
 
 // everything you want to design for this ROOM you should do it inside createRoom function
 // you are also free to create functions outside the createRoom function and call them inside afterwards
 export const collidableObjectsroom2 = [];
+const puzz2Models = new THREE.Group();
+puzz2Models.name = "puzz2Models"; 
 function createWall(width, height, depth, x, y, z, paint,path) {
   const wallgeometry = new THREE.BoxGeometry(width, height, depth);
   const wallmaterial = new THREE.MeshPhongMaterial({ map: path});
@@ -17,6 +20,24 @@ function createWall(width, height, depth, x, y, z, paint,path) {
 
   return wall;
 }
+
+const addModel = (path, name, position, scale, rotation = {}, interactable = true) => {
+    loadModel(
+      path,
+      { x: position.x, y: position.y, z: position.z, scale, rotation },
+      (model) => {
+        model.name = name;
+        model.userData.interactable = interactable;
+        model.userData.type = name;
+
+        model.traverse((child) => {
+          if (child !== model) child.userData.parentName = name;
+        });
+        collidableObjectsroom2.push(model)
+        puzz2Models.add(model);
+      }
+    );
+  };
 
 // function to create a floor
 function createFloor(width, height, depth, x, y, z, paint,path){
@@ -64,7 +85,7 @@ function createLampWithLight(x, y, z, scale = 20) {
       group.add(lamp);
       
     }
-  );
+  );  
 
   // point light to emit illumination
   const lampLight = new THREE.PointLight(0xfff2cc, 50, 50); 
@@ -143,6 +164,84 @@ export function createRoom2() {
     loadModel('/models/old_bed.glb',{x:10,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
     loadModel('/models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
 
+
+
+   addModel(
+    '/models/tablet.glb',
+    'room2tablet',
+    { x:-20.9,y:4.1,z:-30 },
+    0.012,
+    { x: Math.PI / 2, y:3*Math.PI/2}
+  );
+
+
+  addModel(
+    '/models/1.glb',
+    '8puzz1',
+    { x: -21.4, y: 5.8, z: -29.7 },
+    4,
+    { x:Math.PI/2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/2.glb',
+    '8puzz2',
+    { x: -20.5, y: 5.8, z: -29.7  },
+    4,
+    { x: Math.PI/ 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/3.glb',
+    '8puzz3',
+    { x: -19.6, y: 5.8, z: -29.7  },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/4.glb',
+    '8puzz4',
+    { x: -21.4, y: 4.9, z: -29.7 },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/5.glb',
+    '8puzz5',
+    { x: -20.5, y: 4.9, z: -29.7 },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/6.glb',
+    '8puzz6',
+    { x: -19.6, y: 4.9, z: -29.7  },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/7.glb',
+    '8puzz7',
+    { x: -21.4, y: 4, z: -29.7  },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+  addModel(
+    '/models/8.glb',
+    '8puzz8',
+    { x: -20.5, y: 4, z: -29.7  },
+    4,
+    { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
+  );
+
+  // Add key2 for the 8-puzzle (positioned relative to chest like key1 in room1)
+  addModel(
+    '/models/key.glb',
+    'key2',
+    { x: -26, y: 0.5, z: -25 }, // 1 unit right of chest (chest is at x:-27)
+    0.003,
+    { x: Math.PI / 2 }
+  );
+
+  room.add(puzz2Models);
     // window
     // loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window); });
 
@@ -175,5 +274,16 @@ export function createRoom2() {
     collidableObjectsroom2.push(lamp3);
 
     
-    return room;
+    return {room,puzz2Models};
+}
+
+export function setupRoom2Puzzles(room, puzz2Models, puzzleManager, infoDisplay) {
+  // Create the puzzle integration
+  const puzzle2Integration = createPuzzle2Integration(puzz2Models, infoDisplay);
+  
+  // Register with puzzle manager
+  // Use a unique ID for this room (level1-room2)
+  puzzleManager.registerPuzzle('level1-room2', puzzle2Integration);
+  
+  console.log('Room 2 puzzles registered');
 }

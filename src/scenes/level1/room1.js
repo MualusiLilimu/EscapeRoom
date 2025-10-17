@@ -13,6 +13,7 @@ export const collidableObjectsroom1 = [];
 
 const puzz1Models = new THREE.Group();
 puzz1Models.name = "puzz1Models"; 
+
 //helper function for adding and naming models
 
 const addModel = (path, name, position, scale, rotation = {}, interactable = true) => {
