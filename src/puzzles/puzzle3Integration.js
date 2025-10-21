@@ -63,29 +63,40 @@ export function createPuzzle3Integration(modelsGroup, infoDisplay, room) {
 
     handleClick: (objectName, object) => {
       if (integration._finished) return null;
+
+      // Only respond to clicks that are on a pressure plate (or a child of one)
+      let plateObj = null;
       try {
-        // Start plate press animation if clicked object is a pressure plate
-        if (object && object.userData && object.userData.isPressurePlate) {
-          const nm = object.name || object.userData.parentName || ('plate_' + Math.random().toString(36).slice(2,8));
-          integration._pressed[nm] = {
-            obj: object,
-            start: performance.now(),
-            duration: 400,
-            depth: 0.06,
-            baseY: object.position.y
-          };
-          try { updateInfoDisplay(infoDisplay, 'pressure plate pressed', true); } catch(_){}
+        let o = object;
+        while (o) {
+          if (o.userData && o.userData.isPressurePlate) { plateObj = o; break; }
+          o = o.parent;
         }
-      } catch(_){}
-      try { console.log('puzzle3Integration: handleClick', { objectName }); } catch(_){}
+      } catch(_) { plateObj = null; }
 
-      // determine canonical name to pass into puzzle logic
-      let nameToUse = objectName;
+      if (!plateObj) {
+        // not a pressure-plate click — ignore for this puzzle
+        try { console.log('puzzle3Integration: click ignored (not a plate)', { objectName }); } catch(_){}
+        return null;
+      }
+
+      // Start plate press animation on the actual plate object
       try {
-        if (object && object.userData && object.userData.parentName) nameToUse = object.userData.parentName;
-        if ((!nameToUse || nameToUse === '') && object && object.name) nameToUse = object.name;
+        const nm = plateObj.name || plateObj.userData.parentName || ('plate_' + Math.random().toString(36).slice(2,8));
+        integration._pressed[nm] = {
+          obj: plateObj,
+          start: performance.now(),
+          duration: 400,
+          depth: 0.06,
+          baseY: plateObj.position.y
+        };
+        try { updateInfoDisplay(infoDisplay, 'pressure plate pressed', true); } catch(_){ }
       } catch(_){}
 
+      try { console.log('puzzle3Integration: handleClick', { objectName }); } catch(_){ }
+
+      // determine canonical name to pass into puzzle logic (use plate object data)
+      let nameToUse = plateObj.userData && plateObj.userData.parentName ? plateObj.userData.parentName : (plateObj.name || objectName);
       const result = handlePuzzle3Click(nameToUse, puzzle3);
       try { console.log('puzzle3Integration: result', { result, progress: puzzle3.progress }); } catch(_){}
       if (result === 'correct') {

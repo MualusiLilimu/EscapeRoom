@@ -279,12 +279,11 @@ export function createRoom2() {
 
 export function setupRoom2Puzzles(room, puzz2Models, puzzleManager, infoDisplay) {
   try {
-    // create and register puzzle2 integration
     const modelsGroup = puzz2Models || room.getObjectByName('puzz2Models') || room;
     const integration = createPuzzle2Integration(modelsGroup, infoDisplay, room);
     puzzleManager.registerPuzzle(room.userData.roomId || 'level1-room2', integration);
-    try { console.log('Room 2 puzzles registered (puzzle2 enabled)'); } catch(_){}
+    try { console.log('Room 2 puzzles registered (puzzle2 enabled)'); } catch(_){ }
   } catch (e) {
-    try { console.error('Failed to register Room 2 puzzles', e); } catch(_){}
+    try { console.error('Failed to register Room 2 puzzles', e); } catch(_){ }
   }
 }
