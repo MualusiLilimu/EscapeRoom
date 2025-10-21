@@ -1,6 +1,6 @@
 // Utility to load models (.gltf) or textures, so we don’t repeat code everywhere.
 
-import { TextureLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { TextureLoader } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 export function loadTexture(path) {

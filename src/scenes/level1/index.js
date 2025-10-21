@@ -13,7 +13,7 @@
 
 import { createRoom1, setupRoom1Puzzles } from './room1.js';
 import { createRoom2 ,setupRoom2Puzzles} from './room2.js';
-import { createRoom3 } from './room3.js';
+import { createRoom3, setupRoom3Puzzles } from './room3.js';
 import { createRoom4 } from './room4.js';
 
 export function createLevel1() {
@@ -60,7 +60,9 @@ export function createLevel1() {
       // Setup puzzles for each room that has them
       setupRoom1Puzzles(room1, puzz1Models, puzzleManager, infoDisplay);
       // Add more puzzle setups for other rooms as needed
-      setupRoom2Puzzles(room2, puzz2Models, puzzleManager, infoDisplay);
+  setupRoom2Puzzles(room2, puzz2Models, puzzleManager, infoDisplay);
+  // Room3: pressure plate / sequence puzzle integration
+  setupRoom3Puzzles(room3, puzzleManager, infoDisplay);
     }
   };
 }

@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import * as THREE from 'three';
 import { loadTexture } from '../../../utils/loader.js';
 import { loadModel } from '../../../utils/loader.js';
 
@@ -70,6 +70,19 @@ function createDoor(width, height, depth, x, y, z, texturePath = null, color = "
 
 export function createRoom3() {
   const room = new THREE.Group();
+  const puzz3Models = new THREE.Group();
+  puzz3Models.name = 'puzz3Models';
+
+  // Helper: ensure any inner meshes mark which logical parent name they belong to
+  function tagChildrenWithParentName(obj, parentName) {
+    try {
+      obj.traverse((c) => {
+        if (c !== obj && c.isMesh) {
+          c.userData.parentName = parentName;
+        }
+      });
+    } catch (_) {}
+  }
 
   // Textures 
   const texturePaths = {
@@ -174,6 +187,49 @@ export function createRoom3() {
     room.add(header);
     collidableObjectsroom3.push(header);
   }
+
+  // Instruction sign near the entrance
+  function createSign(lines = [], width = 8, height = 3) {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      // background
+      ctx.fillStyle = 'rgba(8,8,8,0.9)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // title
+      ctx.fillStyle = '#ff4444';
+      ctx.textAlign = 'center';
+      ctx.font = '48px serif';
+      if (lines[0]) ctx.fillText(lines[0], canvas.width / 2, 80);
+      // subtitle
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '32px serif';
+      if (lines[1]) ctx.fillText(lines[1], canvas.width / 2, 150);
+      // hint / small
+      ctx.font = '26px serif';
+      if (lines[2]) ctx.fillText(lines[2], canvas.width / 2, 240);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.needsUpdate = true;
+      const geo = new THREE.PlaneGeometry(width, height);
+      const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+      const mesh = new THREE.Mesh(geo, mat);
+      // position the sign just inside the door so it's visible when entering
+      mesh.position.set(0, doorHeight + 1, SIZE / 2 - 2.0);
+      mesh.rotation.y = Math.PI; // face inward
+      mesh.userData.isSign = true;
+      return mesh;
+    } catch (_) { return new THREE.Group(); }
+  }
+
+  const sign = createSign([
+    'Press the pressure plates in the correct order',
+    'Can you beat the pressure...',
+    'Hint: combination is of length 4 — no repeat'
+  ], 8, 3);
+  room.add(sign);
 
   // skirting (position top flush with floor top)
   const skThick = 0.25;
@@ -341,7 +397,11 @@ export function createRoom3() {
 
     doll.castShadow = true;
     doll.receiveShadow = true;
-    room.add(doll);
+    // make interactable and add to puzzle models
+    doll.name = 'doll';
+    doll.userData.interactable = true;
+    tagChildrenWithParentName(doll, 'doll');
+    puzz3Models.add(doll);
     collidableObjectsroom3.push(doll);
   });
 
@@ -365,7 +425,10 @@ export function createRoom3() {
 
     cabinet.castShadow = true;
     cabinet.receiveShadow = true;
-    room.add(cabinet);
+    cabinet.name = 'cabinet';
+    cabinet.userData.interactable = true;
+    tagChildrenWithParentName(cabinet, 'cabinet');
+    puzz3Models.add(cabinet);
     collidableObjectsroom3.push(cabinet);
   });
 
@@ -390,7 +453,10 @@ export function createRoom3() {
     skull.rotation.y = -Math.PI/2;
     skull.castShadow = true;
     skull.receiveShadow = true;
-    room.add(skull);
+    skull.name = 'skull';
+    skull.userData.interactable = true;
+    tagChildrenWithParentName(skull, 'skull');
+    puzz3Models.add(skull);
     collidableObjectsroom3.push(skull);
   });
 
@@ -523,10 +589,47 @@ export function createRoom3() {
     (chest) => {
       chest.castShadow = true;
       chest.receiveShadow = true;
-      room.add(chest);
+      chest.name = 'chest';
+      chest.userData.interactable = true;
+      tagChildrenWithParentName(chest, 'chest');
+      puzz3Models.add(chest);
       collidableObjectsroom3.push(chest);
     }
   );
+
+  // Pressure plates (map each plate to a logical name used by puzzle3: doll, skull, chest, cabinet)
+  const plates = [
+    { name: 'doll', x: 16, z: -7 },
+    { name: 'skull', x: 16, z: 18 },
+    { name: 'chest', x: -10, z: -10 },
+    { name: 'cabinet', x: -12, z: 15 },
+  ];
+
+  plates.forEach(p => {
+    loadModel('/models/pressure_platetigris.glb', { x: p.x, y: -5, z: p.z, scale: 0.2 }, (plate) => {
+      plate.name = p.name;
+      plate.userData.interactable = true;
+      // mark as a pressure plate so integrations can detect stepping
+      plate.userData.isPressurePlate = true;
+      try {
+        const bbox = new THREE.Box3().setFromObject(plate);
+        const bottomY = bbox.min.y || 0;
+        // Place the plate so its bottom rests slightly above the floor to avoid z-fighting
+        plate.position.set(p.x, 0.05, p.z);
+        // ensure shadows
+        plate.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+        try { console.log('room3: plate added', p.name, plate.position); } catch(_) {}
+      } catch (e) {}
+      // tag children so inner meshes resolve back to the logical plate name
+      tagChildrenWithParentName(plate, p.name);
+      puzz3Models.add(plate);
+      collidableObjectsroom3.push(plate);
+    });
+  });
+
+  // Add the puzzle models group once
+  room.add(puzz3Models);
+
 
   // ensure all meshes cast and receive shadows properly
   room.traverse(obj => {
@@ -537,4 +640,13 @@ export function createRoom3() {
   });
 
   return room;
+}
+
+// Setup puzzles for room3: register a simple interaction for the pressure plate
+import { createPuzzle3Integration } from '../../puzzles/puzzle3Integration.js';
+
+export function setupRoom3Puzzles(room, puzzleManager, infoDisplay) {
+  const modelsGroup = room.getObjectByName('puzz3Models') || room;
+  const integration = createPuzzle3Integration(modelsGroup, infoDisplay, room);
+  puzzleManager.registerPuzzle(room.userData.roomId || 'level1-room3', integration);
 }
