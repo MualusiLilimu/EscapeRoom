@@ -57,7 +57,7 @@ function nextRoom() {
     window.level_num = roomNumber;
     level();
     resetCountdown(5);
-    startCountdown(5);
+    // startCountdown(5);
     // Activate new room's puzzle
     if (puzzleManager) {
         puzzleManager.activateRoom(newRoom.userData.roomId);
