@@ -186,10 +186,14 @@ function checkDoorInteraction() {
     }
 
     // Show proper UI based on keys
-    if (window.numOfKeys > 0) {
+    if (window.numOfKeys > 0 && current_room.userData.roomId === "level1-room1") {
         interactionUI.style.display = nearDoor ? 'block' : 'none';
         no_key.style.display = 'none';
-    } else {
+    } else if(window.numOfKeys > 1 && current_room.userData.roomId === "level1-room2"){
+        interactionUI.style.display = nearDoor ? 'block' : 'none';
+        no_key.style.display = 'none';
+    }
+    else{
         no_key.style.display = nearDoor ? 'block' : 'none';
         interactionUI.style.display = 'none';
     }
@@ -199,8 +203,11 @@ function checkDoorInteraction() {
 // When the player presses 'E' the door unlocks
 window.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 'e' && nearDoor && !doorUnlocked) {
-    if(window.numOfKeys > 0){
+    if(window.numOfKeys > 0 && current_room.userData.roomId === "level1-room1"){
       unlockDoor();
+    }
+    else if(window.numOfKeys > 1 && current_room.userData.roomId === "level1-room2"){
+        unlockDoor();
     }
   }
 });
