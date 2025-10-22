@@ -13,19 +13,46 @@ export class PuzzleManager {
   }
 
   setupClickHandler() {
-    const onMouseDown = (event) => {
-      if (event.button !== 0) return;
-      
-      const coords = new THREE.Vector2(0, 0);
+    const onPointerDown = (event) => {
+      // Accept left button or touch/pen (pointerdown may not have button for touch)
+      if (typeof event.button === 'number' && event.button !== 0) return;
+
+      const coords = new THREE.Vector2();
+      try {
+        const canvas = this.renderer && this.renderer.domElement ? this.renderer.domElement : document.body;
+        // If pointer is locked to the canvas, use the center of the screen
+        if (document.pointerLockElement === canvas) {
+          coords.set(0, 0);
+        } else {
+          const rect = canvas.getBoundingClientRect();
+          const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          coords.set(x, y);
+        }
+      } catch (e) {
+        // Fallback to center
+        coords.set(0, 0);
+      }
+
       this.raycaster.setFromCamera(coords, this.camera);
-      
+
       const currentPuzzle = this.activePuzzles.get(this.currentRoomId);
       if (!currentPuzzle || !currentPuzzle.models) return;
-      
+
+      // Debug: list models that will be tested by the raycaster
+      try {
+        const names = currentPuzzle.models.children.map(c => c.name || c.type || c.uuid);
+        console.log('PuzzleManager: testing models children', { roomId: this.currentRoomId, childCount: currentPuzzle.models.children.length, names });
+      } catch (_) {}
+
       const intersects = this.raycaster.intersectObjects(currentPuzzle.models.children, true);
-      
+
+      // Debug: show intersects, current room and coords
+      try { console.log('PuzzleManager: onPointerDown', { roomId: this.currentRoomId, intersects: intersects.length, coords: coords.toArray() }); } catch (_) {}
+
       if (intersects.length > 0) {
         const firstIntersect = intersects[0];
+        try { console.log('PuzzleManager: firstIntersect object', firstIntersect.object && firstIntersect.object.name); } catch (_) {}
         let currentObject = firstIntersect.object;
         let namedParent = null;
         
@@ -56,12 +83,14 @@ export class PuzzleManager {
         }
         
         if (namedParent && namedParent.name && currentPuzzle.handleClick) {
+          try { console.log('PuzzleManager: calling handleClick on', namedParent.name); } catch (_) {}
           currentPuzzle.handleClick(namedParent.name, namedParent);
         }
       }
     };
     
-    document.addEventListener('mousedown', onMouseDown);
+    // Use pointer events for better compatibility with pointer lock and touch
+    document.addEventListener('pointerdown', onPointerDown);
   }
 
   // Register a puzzle for a specific room

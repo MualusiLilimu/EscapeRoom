@@ -25,6 +25,18 @@ import { createLevel2 } from './scenes/level2/index.js';
 import { createLevel3 } from './scenes/level3/index.js';
 import { createLevel4 } from './scenes/level4/index.js';
 
+// Guard: some browsers throw InvalidStateError when setPointerCapture is called
+// in situations where pointer capture isn't allowed (OrbitControls in some builds).
+// Wrap the canvas setPointerCapture with a safe no-op to avoid uncaught exceptions.
+function makeSafePointerCapture(canvas) {
+    if (!canvas || !canvas.setPointerCapture) return;
+    const orig = canvas.setPointerCapture.bind(canvas);
+    canvas.setPointerCapture = (pointerId) => {
+        try { orig(pointerId); } catch (e) { /* ignore InvalidStateError */ }
+    };
+}
+
+// Start with collidable objects from room1 by default
 const collidableObjects = collidableObjectsroom1;
 // --- Scene, camera, renderer setup ---
 const scene = new THREE.Scene();
@@ -46,6 +58,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;                 // enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // soft shadows
 document.body.appendChild(renderer.domElement);
+// Make pointer capture safe on the renderer canvas
+makeSafePointerCapture(renderer.domElement);
 const puzzleManager = new PuzzleManager(scene, camera, renderer);
 
 // Explosion state
@@ -139,6 +153,8 @@ current_room.visible = true;
 puzzleManager.activateRoom(current_room.userData.roomId);
 
 let characterControls = null;
+// Expose to other modules (read-only usage expected)
+window._characterControls = null;
 const keysPressed = {};
 const clock = new THREE.Clock();
 
@@ -300,6 +316,8 @@ new GLTFLoader().load('/models/player.glb', gltf => {
     gltf.animations.forEach(clip => animationsMap.set(clip.name, mixer.clipAction(clip)));
 
     characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'idle',collidableObjects );
+    // make accessible for proximity checks (read-only)
+    try { window._characterControls = characterControls; } catch (_) {}
 });
 
 // Preload explosion assets (guts + blood splatter)
@@ -308,7 +326,9 @@ sharedLoader.load('/models/guts.glb', (gltf) => {
     gutsTemplate = gltf.scene;
     normalizeAndCenterTemplate(gutsTemplate, 1.0);
 });
-sharedLoader.load('/models/blood_slatter.glb', (gltf) => {
+// The original 'blood_slatter.glb' isn't present in the models directory on all installs.
+// Fall back to a similar authored splatter/gore model if available to avoid a 404.
+sharedLoader.load('/models/gore.glb', (gltf) => {
     bloodSplatterTemplate = gltf.scene;
     normalizeAndCenterTemplate(bloodSplatterTemplate, 1.0);
 });

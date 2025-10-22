@@ -207,3 +207,49 @@ startButton.addEventListener('click', () => {
         timerStarted = true;
     }
 });
+
+// -------------------------
+// Win UI helper
+// -------------------------
+window.showWinUI = function() {
+    try {
+        // mark the game as ended; prevent further input/updates
+        window.isPaused = true;
+        window.gameEnded = true;
+
+        // remove any existing win overlay and create a credits roll
+        let credits = document.getElementById('credits-roll');
+        if (!credits) {
+            credits = document.createElement('div');
+            credits.id = 'credits-roll';
+            const inner = document.createElement('div');
+            inner.className = 'credits-inner';
+            const list = document.createElement('div');
+            list.className = 'credits-list';
+            // credits content — alphabetical by last name (full names only)
+            list.innerHTML = `
+                <div style="font-size:32px; margin-bottom:18px; color:#ff4444;">THANK YOU FOR PLAYING</div>
+                <div style="font-weight:700; font-size:22px; margin-bottom:8px;">CREDITS</div>
+                <div>Mualusi Lilimu</div>
+                <div>Steven Mabasa</div>
+                <div>Takudzwa Mhizha</div>
+                <div>Thendo Nelufule</div>
+                <div>Siyabonga Nyembe</div>
+                <div>Mumandafhadzi Siaga</div>
+                <div style="margin-top:20px; font-size:18px;">Returning to the main menu...</div>
+            `;
+            inner.appendChild(list);
+            credits.appendChild(inner);
+            document.body.appendChild(credits);
+        }
+        // show credits and start the roll
+        try { credits.style.display = 'flex'; } catch(_){}
+        // after the animation finishes, redirect to the start page and enforce game over
+        const duration = 12000; // ms; matches CSS animation credit-scroll 12s
+        setTimeout(() => {
+            try { credits.style.display = 'none'; } catch(_){}
+            // final redirect to start page (root)
+            try { window.location.href = '/'; } catch(_){}
+        }, duration + 500);
+    } catch (_) {}
+};
