@@ -303,7 +303,7 @@ function switchRoom() {
 
 // player model
 
-new GLTFLoader().load('/models/player.glb', gltf => {
+new GLTFLoader().load('./models/player.glb', gltf => {
     const model = gltf.scene;
     model.traverse(obj => {
         if (obj.isMesh) {
@@ -329,19 +329,19 @@ new GLTFLoader().load('/models/player.glb', gltf => {
 
 // Preload explosion assets (guts + blood splatter)
 const sharedLoader = new GLTFLoader();
-sharedLoader.load('/models/guts.glb', (gltf) => {
+sharedLoader.load('./models/guts.glb', (gltf) => {
     gutsTemplate = gltf.scene;
     normalizeAndCenterTemplate(gutsTemplate, 1.0);
 });
 // The original 'blood_slatter.glb' isn't present in the models directory on all installs.
 // Fall back to a similar authored splatter/gore model if available to avoid a 404.
-sharedLoader.load('/models/gore.glb', (gltf) => {
+sharedLoader.load('./models/gore.glb', (gltf) => {
     bloodSplatterTemplate = gltf.scene;
     normalizeAndCenterTemplate(bloodSplatterTemplate, 1.0);
 });
 
 // Preload authored blood texture (JPEG without alpha). We'll use a shader to discard bright background
-new THREE.TextureLoader().load('/textures/splashed-blood.jpg', (tex) => {
+new THREE.TextureLoader().load('./textures/splashed-blood.jpg', (tex) => {
     tex.wrapS = THREE.ClampToEdgeWrapping;
     tex.wrapT = THREE.ClampToEdgeWrapping;
     tex.encoding = THREE.sRGBEncoding;

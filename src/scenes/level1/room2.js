@@ -79,7 +79,7 @@ function createLampWithLight(x, y, z, scale = 20) {
   const group = new THREE.Group();
 
   // load lamp model
-  loadModel('/models/ceiling_light.glb',
+  loadModel('./models/ceiling_light.glb',
     {x:-18,y:-16.5,z:3,scale:scale},
     (lamp)=>{
       group.add(lamp);
@@ -90,9 +90,9 @@ function createLampWithLight(x, y, z, scale = 20) {
   // point light to emit illumination
   const lampLight = new THREE.PointLight(0xfff2cc, 50, 50); 
   lampLight.position.set(0, -0.5, 0); 
-  lampLight.castShadow = false;
-  lampLight.shadow.mapSize.width = 512;
-  lampLight.shadow.mapSize.height = 512;
+  lampLight.castShadow = true;
+  lampLight.shadow.mapSize.width = 1024;
+  lampLight.shadow.mapSize.height = 1024;
   group.add(lampLight);
 
   group.position.set(x, y, z);
@@ -105,13 +105,13 @@ export function createRoom2() {
     // const plane =  createPlane(20000,1000,'/textures/pave.jpg');
     // room.add(plane);
 
-    const floortexture = loadTexture('/textures/tile.jpg');
+    const floortexture = loadTexture('./textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
     floortexture.wrapT = THREE.RepeatWrapping;
     floortexture.repeat.set(1.5, 1);
-    const walltexture = loadTexture('/textures/wall.jpg');
+    const walltexture = loadTexture('./textures/wall.jpg');
 
-    const ceilingTexture = loadTexture('/textures/ceiling.jpg');
+    const ceilingTexture = loadTexture('./textures/ceiling.jpg');
 
     const ceiling = createFloor(60,1,60,0,16,0,"white",ceilingTexture); 
     room.add(ceiling);
@@ -160,14 +160,14 @@ export function createRoom2() {
     collidableObjectsroom2.push(wall10);
 
     // beds
-    loadModel('/models/old_bed.glb',{x:20,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
-    loadModel('/models/old_bed.glb',{x:10,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
-    loadModel('/models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
+    loadModel('./models/old_bed.glb',{x:20,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
+    loadModel('./models/old_bed.glb',{x:10,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
+    loadModel('./models/old_bed.glb',{x:0,y:0,z:-30,scale:5.5},(bed)=>{ room.add(bed), collidableObjectsroom2.push(bed); });
 
 
 
    addModel(
-    '/models/tablet.glb',
+    './models/tablet.glb',
     'room2tablet',
     { x:-20.9,y:4.1,z:-30 },
     0.012,
@@ -176,56 +176,56 @@ export function createRoom2() {
 
 
   addModel(
-    '/models/1.glb',
+    './models/1.glb',
     '8puzz1',
     { x: -21.4, y: 5.8, z: -29.7 },
     4,
     { x:Math.PI/2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/2.glb',
+    './models/2.glb',
     '8puzz2',
     { x: -20.5, y: 5.8, z: -29.7  },
     4,
     { x: Math.PI/ 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/3.glb',
+    './models/3.glb',
     '8puzz3',
     { x: -19.6, y: 5.8, z: -29.7  },
     4,
     { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/4.glb',
+    './models/4.glb',
     '8puzz4',
     { x: -21.4, y: 4.9, z: -29.7 },
     4,
     { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/5.glb',
+    './models/5.glb',
     '8puzz5',
     { x: -20.5, y: 4.9, z: -29.7 },
     4,
     { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/6.glb',
+    './models/6.glb',
     '8puzz6',
     { x: -19.6, y: 4.9, z: -29.7  },
     4,
     { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/7.glb',
+    './models/7.glb',
     '8puzz7',
     { x: -21.4, y: 4, z: -29.7  },
     4,
     { x: Math.PI / 2*3,z:Math.PI,y:Math.PI}
   );
   addModel(
-    '/models/8.glb',
+    './models/8.glb',
     '8puzz8',
     { x: -20.5, y: 4, z: -29.7  },
     4,
@@ -234,7 +234,7 @@ export function createRoom2() {
 
   // Add key2 for the 8-puzzle (positioned relative to chest like key1 in room1)
   addModel(
-    '/models/key.glb',
+    './models/key.glb',
     'key2',
     { x: -26, y: 0.5, z: -25 }, // 1 unit right of chest (chest is at x:-27)
     0.003,
@@ -246,19 +246,19 @@ export function createRoom2() {
     // loadModel('/models/window2.glb',{x:28.5,y:8,z:6,scale:4,rotation:{y:-Math.PI/2}},(window)=>{ room.add(window); });
 
     // closet
-    loadModel('/models/box_wooden_closet_supplies.glb',{x:-28.5,y:0,z:-15,scale:5,rotation:{y:2*Math.PI}},(closet)=>{ room.add(closet), collidableObjectsroom2.push(closet); });
+    loadModel('./models/box_wooden_closet_supplies.glb',{x:-28.5,y:0,z:-15,scale:5,rotation:{y:2*Math.PI}},(closet)=>{ room.add(closet), collidableObjectsroom2.push(closet); });
 
     // desks
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:25,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:18,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
-    loadModel('/models/japan_school_desk.glb',{x:27,y:0,z:-7,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
+    loadModel('./models/japan_school_desk.glb',{x:27,y:0,z:25,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
+    loadModel('./models/japan_school_desk.glb',{x:27,y:0,z:18,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
+    loadModel('./models/japan_school_desk.glb',{x:27,y:0,z:-7,scale:6,rotation:{y:Math.PI/2}},(desk)=>{ room.add(desk), collidableObjectsroom2.push(desk); });
 
     // doors
-    loadModel('/models/door.glb',{x:-30,y:11,z:3,scale:0.05,rotation:{y:Math.PI/2}},(door)=>{ room.add(door), collidableObjectsroom2.push(door); });
-    loadModel('/models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door),wooden_door.name = "exitDoor",wooden_door.userData.isDoor = true, collidableObjectsroom2.push(wooden_door); });
+    loadModel('./models/door.glb',{x:-30,y:11,z:3,scale:0.05,rotation:{y:Math.PI/2}},(door)=>{ room.add(door), collidableObjectsroom2.push(door); });
+    loadModel('./models/wooden_door.glb',{x:-3.5,y:0,z:30,scale:1.9,rotation:{y:Math.PI}},(wooden_door)=>{ room.add(wooden_door),wooden_door.name = "exitDoor",wooden_door.userData.isDoor = true, collidableObjectsroom2.push(wooden_door); });
 
     // chest
-    loadModel('/models/treasure_chest.glb',{x:-27,y:0.5,z:-25,scale:0.06},(chest)=>{ room.add(chest), collidableObjectsroom2.push(chest); });
+    loadModel('./models/treasure_chest.glb',{x:-27,y:0.5,z:-25,scale:0.06},(chest)=>{ room.add(chest), collidableObjectsroom2.push(chest); });
 
     // === Lamps with light ===
     const lamp1 = createLampWithLight(0, 15.5, -2, 6);
