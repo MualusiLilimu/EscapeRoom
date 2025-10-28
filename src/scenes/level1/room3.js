@@ -86,11 +86,11 @@ export function createRoom3() {
 
   // Textures 
   const texturePaths = {
-    floor: '/textures/Floor_3.jpg',
-    wall: '/textures/Wall_3.jpg',
-    ceiling: '/textures/Ceiling_3.jpg',
-    pave: '/textures/Pave_3.jpg',
-    door: '/textures/Door_3.jpg'
+    floor: './textures/Floor_3.jpg',
+    wall: './textures/Wall_3.jpg',
+    ceiling: './textures/Ceiling_3.jpg',
+    pave: './textures/Pave_3.jpg',
+    door: './textures/Door_3.jpg'
   };
 
   // load textures
@@ -251,22 +251,22 @@ export function createRoom3() {
   doorSpot.position.set(0, HEIGHT - 4, SIZE / 2 - 3);
   doorSpot.target.position.set(0, 3.5, SIZE / 2 - 1);
   doorSpot.castShadow = true;
-  doorSpot.shadow.mapSize.width = 512;
-  doorSpot.shadow.mapSize.height = 512;
+  doorSpot.shadow.mapSize.width = 1024;
+  doorSpot.shadow.mapSize.height = 1024;
   room.add(doorSpot);
   room.add(doorSpot.target);
 
   const dir = new THREE.DirectionalLight(0xffffff, 0.3);
   dir.position.set(-30, 40, 20);
   dir.castShadow = true;
-  dir.shadow.mapSize.width = 512;
-  dir.shadow.mapSize.height = 512;
+  dir.shadow.mapSize.width = 1024;
+  dir.shadow.mapSize.height = 1024;
   room.add(dir);
 
   // ----------------- MODELS -----------------
 
   // Ceiling lamp model: positioned at center of room on ceiling
-  loadModel('/models/ceiling_lamp.glb', {}, (lamp) => {
+  loadModel('./models/ceiling_lamp.glb', {}, (lamp) => {
     const bbox = new THREE.Box3().setFromObject(lamp);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -284,19 +284,19 @@ export function createRoom3() {
     const bulbLight = new THREE.PointLight(0xfff7e6, 8, 80);
     bulbLight.position.set(0, 0, 0); // Relative to lamp position
     bulbLight.castShadow = true;
-    bulbLight.shadow.mapSize.width = 512;
-    bulbLight.shadow.mapSize.height = 512;
+    bulbLight.shadow.mapSize.width = 1024;
+    bulbLight.shadow.mapSize.height = 1024;
     bulbLight.shadow.bias = -0.003;
     lamp.add(bulbLight);
 
-    lamp.castShadow = false;
+    lamp.castShadow = true;
     lamp.receiveShadow = true;
     room.add(lamp);
   });
 
 
   // Couch model: centered in the room and scaled to fit comfortably
-  loadModel('/models/old_couch.glb', {}, (couch) => {
+  loadModel('./models/old_couch.glb', {}, (couch) => {
     // Compute current size
     const bbox = new THREE.Box3().setFromObject(couch);
     const size = new THREE.Vector3();
@@ -327,7 +327,7 @@ export function createRoom3() {
 
 
   // TV model: placed at room center and scaled to fit
-  loadModel('/models/tv.glb', {}, (tv) => {
+  loadModel('./models/tv.glb', {}, (tv) => {
     const bbox = new THREE.Box3().setFromObject(tv);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -352,7 +352,7 @@ export function createRoom3() {
   });
 
   // Dead body model: placed at room center
-  loadModel('/models/dead_body.glb', {}, (body) => {
+  loadModel('./models/dead_body.glb', {}, (body) => {
     const bbox = new THREE.Box3().setFromObject(body);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -376,7 +376,7 @@ export function createRoom3() {
   });
 
   // Chucky doll model: placed next to the couch
-  loadModel('/models/chucky.glb', {}, (doll) => {
+  loadModel('./models/chucky.glb', {}, (doll) => {
     const bbox = new THREE.Box3().setFromObject(doll);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -406,7 +406,7 @@ export function createRoom3() {
   });
 
   // Bloody cabinet model: placed at room center
-  loadModel('/models/bloody_cabinet.glb', {}, (cabinet) => {
+  loadModel('./models/bloody_cabinet.glb', {}, (cabinet) => {
     const bbox = new THREE.Box3().setFromObject(cabinet);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -461,7 +461,7 @@ export function createRoom3() {
   });
 
   // Display cabinet model: placed at room center
-  loadModel('/models/display_cabinet.glb', {}, (displayCabinet) => {
+  loadModel('./models/display_cabinet.glb', {}, (displayCabinet) => {
     const bbox = new THREE.Box3().setFromObject(displayCabinet);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -486,7 +486,7 @@ export function createRoom3() {
   });
 
   // Metal cabinet model: placed at room center
-  loadModel('/models/metal_cabinet.glb', {}, (metalCabinet) => {
+  loadModel('./models/metal_cabinet.glb', {}, (metalCabinet) => {
     const bbox = new THREE.Box3().setFromObject(metalCabinet);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -511,7 +511,7 @@ export function createRoom3() {
   });
 
   // Torture table model: placed at room center
-  loadModel('/models/torture_table.glb', {}, (tortureTable) => {
+  loadModel('./models/torture_table.glb', {}, (tortureTable) => {
     const bbox = new THREE.Box3().setFromObject(tortureTable);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -536,7 +536,7 @@ export function createRoom3() {
   });
 
   // Gore model: placed at room center
-  loadModel('/models/gore.glb', {}, (gore) => {
+  loadModel('./models/gore.glb', {}, (gore) => {
     const bbox = new THREE.Box3().setFromObject(gore);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -560,7 +560,7 @@ export function createRoom3() {
   });
 
   // Painting model: hung on wall above torture table
-  loadModel('/models/painting.glb', {}, (painting) => {
+  loadModel('./models/painting.glb', {}, (painting) => {
     const bbox = new THREE.Box3().setFromObject(painting);
     const size = new THREE.Vector3();
     bbox.getSize(size);
@@ -584,7 +584,7 @@ export function createRoom3() {
 
 
   // Chest model: added using the same loadModel callback pattern as Room1
-  loadModel('/models/chest.glb',
+  loadModel('./models/chest.glb',
     { x: -SIZE / 2.1 + 2, y: 0, z: -SIZE / 2 + 6, scale: 0.005, rotation: { y: Math.PI / 2 } },
     (chest) => {
       chest.castShadow = true;
@@ -606,7 +606,7 @@ export function createRoom3() {
   ];
 
   plates.forEach(p => {
-    loadModel('/models/pressure_platetigris.glb', { x: p.x, y: -5, z: p.z, scale: 0.2 }, (plate) => {
+    loadModel('./models/pressure_platetigris.glb', { x: p.x, y: -5, z: p.z, scale: 0.2 }, (plate) => {
       plate.name = p.name;
       plate.userData.interactable = true;
       // mark as a pressure plate so integrations can detect stepping

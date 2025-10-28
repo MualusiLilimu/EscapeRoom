@@ -39,7 +39,7 @@ const addModel = (path, name, position, scale, rotation = {}, interactable = tru
 const createPuzzleLight = (name, position) => {
     const light = new THREE.PointLight(0xfff2cc, 10, 50);
     light.position.set(...position);
-    light.castShadow = false;
+    light.castShadow = true;
     light.shadow.bias = -0.003;
     light.name = name;
 
@@ -59,7 +59,7 @@ export function createTexturedNote(
   rotation = { x: 0, y: 0, z: 0 }
 ) {
   loadModel(
-    '/models/post_it_notes.glb',
+    './models/post_it_notes.glb',
     {
       x: position.x,
       y: position.y,
@@ -196,12 +196,12 @@ export function createRoom1() {
     // const plane =  createPlane(20000,1000,'/textures/pave.jpg');
     // room.add(plane);
 
-    const floortexture = loadTexture('/textures/tile.jpg');
+    const floortexture = loadTexture('./textures/tile.jpg');
     floortexture.wrapS = THREE.RepeatWrapping;
     floortexture.wrapT = THREE.RepeatWrapping;
     floortexture.repeat.set(1.5, 1);
-    const walltexture = loadTexture('/textures/wall.jpg');
-    const ceilingTexture = loadTexture('/textures/ceiling.jpg');
+    const walltexture = loadTexture('./textures/wall.jpg');
+    const ceilingTexture = loadTexture('./textures/ceiling.jpg');
     walltexture.wrapS = THREE.RepeatWrapping;
     walltexture.wrapT = THREE.RepeatWrapping;
 
@@ -267,7 +267,7 @@ export function createRoom1() {
     collidableObjectsroom1.push(wall9);
 
     //door
-    const doorTexture = '/textures/black_door1.png'; // replace with your door texture
+    const doorTexture = './textures/black_door1.png'; // replace with your door texture
     const door = createDoor(1, 10, 5, 44.5, 5.5, 22.5, doorTexture);
     door.name = "exitDoor";
     door.userData.isDoor = true;
@@ -277,18 +277,18 @@ export function createRoom1() {
     //////////// Furnitures //////////////////////
 
 
-    const paintingtexture = loadTexture('/textures/painting-min.jpg');
+    const paintingtexture = loadTexture('./textures/painting-min.jpg');
 
     const painting = createFloor(7, 4.6, 0.1, 3.5, 8, -13.8, "white", paintingtexture); 
-    const rgbtexture = loadTexture('/textures/rgb.png');
+    const rgbtexture = loadTexture('./textures/rgb.png');
 
     const rgb = createFloor(7, 4.6, 0.1, 3.5, 8, 28.9, "white", rgbtexture);
     room.add(painting, rgb);
     //post-it notes model
-    createTexturedNote(room, '/textures/love.png', { x: -2.5, y: 4.2, z: 8 },{ x: 0, y: Math.PI / 3, z: 0 });
-    createTexturedNote(room, '/textures/two.png', { x: 3.5, y: 6.2, z: -13.5},{ x: Math.PI/2, y:Math.PI/2, z: 0 });
-    createTexturedNote(room, '/textures/one.png', {x: -13.9, y: 5.8, z: 20},{ x: 0, y:Math.PI, z: Math.PI/2 });
-    createTexturedNote(room, '/textures/two.png', {x: -13.9, y: 5.8, z: 23},{ x: 0, y:Math.PI, z: Math.PI/2 });
+    createTexturedNote(room, './textures/love.png', { x: -2.5, y: 4.2, z: 8 },{ x: 0, y: Math.PI / 3, z: 0 });
+    createTexturedNote(room, './textures/two.png', { x: 3.5, y: 6.2, z: -13.5},{ x: Math.PI/2, y:Math.PI/2, z: 0 });
+    createTexturedNote(room, './textures/one.png', {x: -13.9, y: 5.8, z: 20},{ x: 0, y:Math.PI, z: Math.PI/2 });
+    createTexturedNote(room, './textures/two.png', {x: -13.9, y: 5.8, z: 23},{ x: 0, y:Math.PI, z: Math.PI/2 });
 
     //adding puzzle lights
 
@@ -307,7 +307,7 @@ export function createRoom1() {
 
   puzzLightPositions.forEach(({ name, z }) =>
     addModel(
-      '/models/puzzLight.glb',
+      './models/puzzLight.glb',
       name,
       { x: -14, y: 9, z },
       0.03,
@@ -325,7 +325,7 @@ export function createRoom1() {
 
   buttonPositions.forEach(({ name, z }) =>
     addModel(
-      '/models/button.glb',
+      './models/button.glb',
       name,
       { x: -14, y: 7, z },
       0.3,
@@ -335,7 +335,7 @@ export function createRoom1() {
 
   // Load the key
   addModel(
-    '/models/key.glb',
+    './models/key.glb',
     'key1',
     { x: -10, y: 0, z: 23 },
     0.003,
@@ -344,7 +344,7 @@ export function createRoom1() {
 
   room.add(puzz1Models)
     //cage
-    loadModel('/models/cage.glb',
+    loadModel('./models/cage.glb',
       {x:-8,y:0,z:-9,scale:0.05},
       (cage)=>{
         room.add(cage);
@@ -352,7 +352,7 @@ export function createRoom1() {
       }
     );
     //locker
-    loadModel('/models/locker.glb',
+    loadModel('./models/locker.glb',
       {x:13,y:0,z:0,scale:6,rotation:{y:-Math.PI/2}},
       (locker)=>{
         room.add(locker);
@@ -360,7 +360,7 @@ export function createRoom1() {
       }
     );
     //dardboard
-    loadModel('/models/dartboard.glb',
+    loadModel('./models/dartboard.glb',
       {x:13.7,y:8,z:9,scale:0.7,rotation:{y:Math.PI/2}},
       (dart)=>{
         room.add(dart);
@@ -368,7 +368,7 @@ export function createRoom1() {
       }
     );
     //old couch
-    loadModel('/models/old_couch.glb',
+    loadModel('./models/old_couch.glb',
       {x:-11.5,y:0,z:9,scale:0.06,rotation:{y:Math.PI/2}},
       (couch)=>{
         room.add(couch);
@@ -376,7 +376,7 @@ export function createRoom1() {
       }
     );
     //old table
-    loadModel('/models/old_wooden_table.glb',
+    loadModel('./models/old_wooden_table.glb',
       {x:-3,y:4,z:9,scale:1.1,rotation:{y:Math.PI}},
       (table)=>{
         room.add(table);
@@ -384,7 +384,7 @@ export function createRoom1() {
       }
     );
     //window
-    loadModel('/models/window.glb',
+    loadModel('./models/window.glb',
       {x:-3,y:6,z:30,scale:1.8,rotation:{y:2*Math.PI}},
       (window)=>{
         room.add(window);
@@ -392,7 +392,7 @@ export function createRoom1() {
       }
     );
     //chest
-    loadModel('/models/chest.glb',
+    loadModel('./models/chest.glb',
       {x:-11,y:0,z:23,scale:0.004,rotation:{y:-Math.PI/2}},
       (chest)=>{
         room.add(chest);
@@ -401,7 +401,7 @@ export function createRoom1() {
     );
     
     //wall lamp
-    loadModel('/models/wall_lamp.glb',
+    loadModel('./models/wall_lamp.glb',
       {x:25,y:8,z:28,scale:3,rotation:{y:Math.PI}},
       (lamp)=>{
         lamp.castShadow = true;
@@ -413,8 +413,8 @@ export function createRoom1() {
         wallLight.target.position.set(25, 5, 20);
         wallLight.castShadow = true;
 
-        wallLight.shadow.mapSize.width = 512;
-        wallLight.shadow.mapSize.height = 512;
+        wallLight.shadow.mapSize.width = 1024;
+        wallLight.shadow.mapSize.height = 1024;
         wallLight.shadow.bias = -0.003;
 
         room.add(wallLight);
@@ -423,7 +423,7 @@ export function createRoom1() {
     );
 
 //ceiling light
-loadModel('/models/ceiling_light.glb',
+loadModel('./models/ceiling_light.glb',
   {x:-6,y:-17.5,z:-30,scale:12,rotation:{y:-Math.PI/2}},
   (ceilingLight)=>{
     room.add(ceilingLight);
