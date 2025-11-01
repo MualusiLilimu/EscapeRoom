@@ -413,8 +413,8 @@ export function createRoom1() {
         wallLight.target.position.set(25, 5, 20);
         wallLight.castShadow = true;
 
-        wallLight.shadow.mapSize.width = 1024;
-        wallLight.shadow.mapSize.height = 1024;
+        wallLight.shadow.mapSize.width = 512;
+        wallLight.shadow.mapSize.height = 512;
         wallLight.shadow.bias = -0.003;
 
         room.add(wallLight);
@@ -432,8 +432,8 @@ loadModel('./models/ceiling_light.glb',
     bulbLight.position.set(0, 10, 10);
     bulbLight.castShadow = true;
 
-    bulbLight.shadow.mapSize.width = 1024;
-    bulbLight.shadow.mapSize.height = 1024;
+    bulbLight.shadow.mapSize.width = 512;
+    bulbLight.shadow.mapSize.height = 512;
     bulbLight.shadow.bias = -0.003;
 
     room.add(bulbLight);

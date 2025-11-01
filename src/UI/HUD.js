@@ -249,7 +249,7 @@ window.showWinUI = function() {
         setTimeout(() => {
             try { credits.style.display = 'none'; } catch(_){}
             // final redirect to start page (root)
-            try { window.location.href = '/'; } catch(_){}
+            try { window.location.href = '/home/smoondancer/index.html'; } catch(_){}
         }, duration + 500);
     } catch (_) {}
 };

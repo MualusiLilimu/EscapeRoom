@@ -192,7 +192,7 @@ export function createRoom3() {
   function createSign(lines = [], width = 8, height = 3) {
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = 1024;
+      canvas.width = 512;
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
       // background
@@ -251,16 +251,16 @@ export function createRoom3() {
   doorSpot.position.set(0, HEIGHT - 4, SIZE / 2 - 3);
   doorSpot.target.position.set(0, 3.5, SIZE / 2 - 1);
   doorSpot.castShadow = true;
-  doorSpot.shadow.mapSize.width = 1024;
-  doorSpot.shadow.mapSize.height = 1024;
+  doorSpot.shadow.mapSize.width = 512;
+  doorSpot.shadow.mapSize.height = 512;
   room.add(doorSpot);
   room.add(doorSpot.target);
 
   const dir = new THREE.DirectionalLight(0xffffff, 0.3);
   dir.position.set(-30, 40, 20);
   dir.castShadow = true;
-  dir.shadow.mapSize.width = 1024;
-  dir.shadow.mapSize.height = 1024;
+  dir.shadow.mapSize.width = 512;
+  dir.shadow.mapSize.height = 512;
   room.add(dir);
 
   // ----------------- MODELS -----------------
@@ -284,8 +284,8 @@ export function createRoom3() {
     const bulbLight = new THREE.PointLight(0xfff7e6, 8, 80);
     bulbLight.position.set(0, 0, 0); // Relative to lamp position
     bulbLight.castShadow = true;
-    bulbLight.shadow.mapSize.width = 1024;
-    bulbLight.shadow.mapSize.height = 1024;
+    bulbLight.shadow.mapSize.width = 512;
+    bulbLight.shadow.mapSize.height = 512;
     bulbLight.shadow.bias = -0.003;
     lamp.add(bulbLight);
 
