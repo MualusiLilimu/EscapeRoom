@@ -91,8 +91,8 @@ function createLampWithLight(x, y, z, scale = 20) {
   const lampLight = new THREE.PointLight(0xfff2cc, 50, 50); 
   lampLight.position.set(0, -0.5, 0); 
   lampLight.castShadow = true;
-  lampLight.shadow.mapSize.width = 1024;
-  lampLight.shadow.mapSize.height = 1024;
+  lampLight.shadow.mapSize.width = 512;
+  lampLight.shadow.mapSize.height = 512;
   group.add(lampLight);
 
   group.position.set(x, y, z);
