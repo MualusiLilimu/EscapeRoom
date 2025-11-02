@@ -110,7 +110,7 @@ function renderDeathCardIfExploded() {
         // Clear and build custom content
         wrapper.innerHTML = '';
         const img = document.createElement('img');
-        img.src = '/textures/scream.png';
+        img.src = './textures/scream.png';
         img.alt = 'Scream';
         img.className = 'death-image';
         const title = document.createElement('div');
@@ -121,7 +121,7 @@ function renderDeathCardIfExploded() {
         restart.textContent = 'Restart';
         const quit = document.createElement('a');
         quit.id = 'quit';
-        quit.href = '/menu';
+        quit.href = '/home/smoondancer/index.html';
         quit.textContent = 'Quit';
         wrapper.appendChild(img);
         wrapper.appendChild(title);

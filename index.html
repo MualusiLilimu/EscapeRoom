@@ -52,7 +52,8 @@
         <a href="#">Improvements</a>
       </nav>
 
-      <a class="room1" href="./public/game.html" id="startButton">START</a>
+      <a class="room1" href="#" id="startButton">START</a>
+
     </header>
 
     <main>
@@ -83,6 +84,23 @@
     </div>
   </div>
 
+  <!-- Intro video popup -->
+  <div id="videoContainer" style="
+    display:none;
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:black;
+    z-index:10000;
+    justify-content:center;
+    align-items:center;
+  ">
+    <video id="introVideo" style="width:100%; height:100%; object-fit:cover;">
+      <source src="./public/gameintro.mp4" type="video/mp4">
+    </video>
+  </div>
+
+
   <script type="importmap">
     {
       "imports": {
@@ -101,6 +119,9 @@
     const yesMusic = document.getElementById('yesMusic');
     const noMusic = document.getElementById('noMusic');
 
+    const videoContainer = document.getElementById('videoContainer');
+    const introVideo = document.getElementById('introVideo');
+
     // User chooses to play music
     yesMusic.addEventListener('click', () => {
       audio.play();
@@ -112,11 +133,26 @@
       musicPopup.style.display = 'none';
     });
 
-    // Stop music when START button is clicked
-    startButton.addEventListener('click', () => {
+    // Start button logic
+    startButton.addEventListener('click', (e) => {
+      e.preventDefault(); // Stop instant navigation
+
+      // Stop music
       audio.pause();
       audio.currentTime = 0;
+
+      // Show video screen and play
+      videoContainer.style.display = 'flex';
+      introVideo.play();
+
+      // When video ends, go to game
+      introVideo.onended = () => {
+        window.location.href = "./public/game.html";
+      };
+
+    
     });
+
   </script>
 </body>
 </html>
