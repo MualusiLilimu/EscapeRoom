@@ -35,6 +35,9 @@ export function createInfoDisplay() {
   return infoDisplay;
 }
 
+
+
+
 export function updateInfoDisplay(infoDisplay, message, temporary = true) {
   infoDisplay.textContent = message;
   
@@ -48,6 +51,19 @@ export function updateInfoDisplay(infoDisplay, message, temporary = true) {
 export function showKeyCollected(infoDisplay) {
   updateInfoDisplay(infoDisplay, '🔑 Key added to inventory!', true);
 }
+
+
+export function showHintDisplay(hintDisplay) {
+  if (!hintDisplay) return;
+  hintDisplay.style.display = 'block';
+}
+
+export function hideHintDisplay(hintDisplay) {
+  if (!hintDisplay) return;
+  hintDisplay.style.display = 'none';
+}
+
+
 
 // 8-Puzzle UI
 let puzzleUI = null;
@@ -71,6 +87,9 @@ export function show8PuzzleUI(puzzleState) {
     puzzleUI.style.minWidth = '200px';
     document.body.appendChild(puzzleUI);
   }
+
+  
+  
   
   // Update content
   const board = puzzleState.board;

@@ -7,14 +7,44 @@ window.isPaused = true;
 window.numOfKeys = 0;
 window.level_num = 0;
 
+
 let timerInterval;
 let timerStarted = false;
+
+export function createHintDisplay() {
+  const infoDisplay = document.createElement('div');
+  infoDisplay.style.position = 'absolute';
+  infoDisplay.style.top = '50px';
+  infoDisplay.style.left = '10px';
+  infoDisplay.style.color = 'white';
+  infoDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+  infoDisplay.style.padding = '10px';
+  infoDisplay.style.fontFamily = 'monospace';
+  infoDisplay.style.fontSize = '14px';
+  infoDisplay.style.borderRadius = '5px';
+  infoDisplay.style.pointerEvents = 'none';
+  infoDisplay.style.zIndex = '1000';
+  infoDisplay.textContent = 'Hints';
+  infoDisplay.style.maxWidth = '300px';
+  document.body.appendChild(infoDisplay);
+  return infoDisplay;
+}
+const hintDisplay = createHintDisplay();
 
 // -------------------------
 // Level & Keys UI
 // -------------------------
 export function level() {
     document.getElementById('levels').textContent = `${window.level_num}`;
+    console.log(`Level updated to ${window.level_num}`);
+    if (window.level_num === 1) {
+        hintDisplay.textContent = "💡 Hint: Explore the first room thoroughly!";
+    } else if (window.level_num === 2) {
+        hintDisplay.textContent = "💡 Hint: Look for patterns in the puzzles!";
+    } else {
+        hintDisplay.textContent = "💡 Hint: The doll sees first. Death follows. Greed hides the third. The cabinet hides the medicine";
+    }
+
 }
 
 export function key() {
