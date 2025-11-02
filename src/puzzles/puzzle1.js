@@ -48,7 +48,15 @@ export function changeLightColor(puzzleModels, puzz) {
   });
 }
 
+// puzzleLogic.js
+
 export function handlePuzzleButtonClick(buttonName, puzzle) {
+  // 🔊 Play button click sound
+  const buttonSound = new Audio('assets/foot_switch.mp3');
+  buttonSound.volume = 0.9;
+  buttonSound.currentTime = 0;
+  buttonSound.play().catch(err => console.log("Button click sound error:", err));
+  
   switch(buttonName) { 
     case 'button2':
       puzzle.light2index = (puzzle.light2index + 1) % 4;
@@ -70,6 +78,7 @@ export function handlePuzzleButtonClick(buttonName, puzzle) {
   }
   return true;
 }
+
 
 export function updateKeyAnimation(puzzleModels, puzzle, delta) {
   if (!puzzle.keyAnimating || puzzle.keyCollected) return;
